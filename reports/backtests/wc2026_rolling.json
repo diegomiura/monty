@@ -1,0 +1,160 @@
+{
+  "tournament": "FIFA World Cup 2026",
+  "mode": "rolling",
+  "training_cutoff": "2026-06-11",
+  "latest_match_used": "2026-06-10",
+  "n_matches": 98,
+  "ensemble": {
+    "n": 98,
+    "log_loss": 0.9014,
+    "brier": 0.5363,
+    "rps": 0.1662,
+    "accuracy": 0.6429,
+    "balanced_accuracy": 0.5866,
+    "top_two_accuracy": 0.8469,
+    "ece": 0.1275
+  },
+  "goals": {
+    "mae_goals_a": 0.9985,
+    "mae_goals_b": 0.8097,
+    "mae_total_goals": 1.3977,
+    "rmse_goals": 1.6965,
+    "exact_score_rate_rounded": 0.1224,
+    "one_goal_tolerance_rate": 0.4082,
+    "mean_pred_total": 2.706,
+    "mean_obs_total": 2.867
+  },
+  "by_stage": {
+    "group": {
+      "n": 72,
+      "log_loss": 0.9071,
+      "brier": 0.5396,
+      "rps": 0.1657,
+      "accuracy": 0.625,
+      "balanced_accuracy": 0.5811,
+      "top_two_accuracy": 0.8333,
+      "ece": 0.0818
+    },
+    "knockout": {
+      "n": 26,
+      "log_loss": 0.8854,
+      "brier": 0.5271,
+      "rps": 0.1675,
+      "accuracy": 0.6923,
+      "balanced_accuracy": 0.6389,
+      "top_two_accuracy": 0.8846,
+      "ece": 0.2539
+    }
+  },
+  "components": {
+    "elo": {
+      "n": 98,
+      "log_loss": 0.8624,
+      "brier": 0.5103,
+      "rps": 0.1572,
+      "accuracy": 0.6224,
+      "balanced_accuracy": 0.5556,
+      "top_two_accuracy": 0.8367,
+      "ece": 0.1322
+    },
+    "poisson": {
+      "n": 98,
+      "log_loss": 0.9055,
+      "brier": 0.5336,
+      "rps": 0.1686,
+      "accuracy": 0.6122,
+      "balanced_accuracy": 0.5531,
+      "top_two_accuracy": 0.8367,
+      "ece": 0.1467
+    },
+    "logistic": {
+      "n": 98,
+      "log_loss": 0.9064,
+      "brier": 0.5402,
+      "rps": 0.1672,
+      "accuracy": 0.6429,
+      "balanced_accuracy": 0.5871,
+      "top_two_accuracy": 0.8469,
+      "ece": 0.132
+    },
+    "gradient_boosting": {
+      "n": 98,
+      "log_loss": 0.893,
+      "brier": 0.526,
+      "rps": 0.1621,
+      "accuracy": 0.6429,
+      "balanced_accuracy": 0.5911,
+      "top_two_accuracy": 0.8571,
+      "ece": 0.1189
+    }
+  },
+  "breakdowns": {
+    "elo_gap_small(<100)": {
+      "n": 33,
+      "log_loss": 1.0683,
+      "brier": 0.6458,
+      "rps": 0.1996,
+      "accuracy": 0.4848,
+      "balanced_accuracy": 0.4499,
+      "top_two_accuracy": 0.697,
+      "ece": 0.0935
+    },
+    "elo_gap_medium(100-250)": {
+      "n": 34,
+      "log_loss": 0.8825,
+      "brier": 0.5095,
+      "rps": 0.1796,
+      "accuracy": 0.7059,
+      "balanced_accuracy": 0.5508,
+      "top_two_accuracy": 0.8529,
+      "ece": 0.1636
+    },
+    "elo_gap_large(>=250)": {
+      "n": 31,
+      "log_loss": 0.7444,
+      "brier": 0.4491,
+      "rps": 0.1159,
+      "accuracy": 0.7419,
+      "balanced_accuracy": 0.6667,
+      "top_two_accuracy": 1.0,
+      "ece": 0.2153
+    },
+    "favorite<50%": {
+      "n": 33,
+      "log_loss": 1.0232,
+      "brier": 0.6166,
+      "rps": 0.1944,
+      "accuracy": 0.5455,
+      "balanced_accuracy": 0.5325,
+      "top_two_accuracy": 0.7576,
+      "ece": 0.1267
+    },
+    "favorite50-70%": {
+      "n": 38,
+      "log_loss": 0.8851,
+      "brier": 0.5097,
+      "rps": 0.1753,
+      "accuracy": 0.6842,
+      "balanced_accuracy": 0.5598,
+      "top_two_accuracy": 0.8158,
+      "ece": 0.0959
+    },
+    "favorite>=70%": {
+      "n": 27,
+      "log_loss": 0.7754,
+      "brier": 0.4755,
+      "rps": 0.1189,
+      "accuracy": 0.7037,
+      "balanced_accuracy": 0.6667,
+      "top_two_accuracy": 1.0,
+      "ece": 0.1728
+    }
+  },
+  "ensemble_weights": {
+    "elo": 0.0,
+    "poisson": 0.1,
+    "logistic": 0.85,
+    "gradient_boosting": 0.05
+  },
+  "calibration_used": false
+}

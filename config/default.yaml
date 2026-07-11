@@ -1,0 +1,81 @@
+# Central configuration. All tunable parameters live here so a saved
+# model can be reproduced from config + data + code.
+
+random_seed: 42
+
+data:
+  raw_dir: data/raw
+  interim_dir: data/interim
+  processed_dir: data/processed
+  metadata_dir: data/metadata
+  # Primary source: martj42/international_results (public GitHub repo, CC0).
+  results_url: "https://raw.githubusercontent.com/martj42/international_results/master/results.csv"
+  shootouts_url: "https://raw.githubusercontent.com/martj42/international_results/master/shootouts.csv"
+  former_names_url: "https://raw.githubusercontent.com/martj42/international_results/master/former_names.csv"
+  # Secondary source: openfootball/worldcup.json (public domain) —
+  # regulation/extra-time/penalty score splits + stage labels for World Cups.
+  openfootball_wc_url_template: "https://raw.githubusercontent.com/openfootball/worldcup.json/master/{year}/worldcup.json"
+  openfootball_wc_years: [2010, 2014, 2018, 2022, 2026]
+  cache_max_age_hours: 6
+
+features:
+  # Matches before this date still feed Elo/rolling state, but model
+  # training rows start here (documented assumption: very old football
+  # is distributionally different and hurts the goal models).
+  train_start: "1990-01-01"
+  rolling_windows: [5, 10, 20]
+  # Exponential recency weighting (day-based), starting values from spec;
+  # ew_halflife_days chosen so weights roughly track the suggested table.
+  ew_halflife_days: 550
+  competitive_window: 10
+
+elo:
+  initial_rating: 1500.0
+  # K factors by competition class (eloratings.net-style), scaled by k_scale.
+  k_base:
+    world_cup: 60
+    continental_final: 50
+    qualifier: 40
+    nations_league: 40
+    other_tournament: 30
+    friendly: 20
+  k_scale: 1.0            # tuned on validation years <= 2013
+  home_advantage: 100.0   # Elo points for a non-neutral home team (tuned <=2013)
+  margin_multiplier: true # goal-difference multiplier on K
+  # Inactivity regression: after a gap > gap_days, shrink toward mean by shrink.
+  inactivity_gap_days: 1460
+  inactivity_shrink: 0.10
+
+models:
+  poisson_alpha: 1.0        # L2 for PoissonRegressor
+  logit_C: 0.05             # inverse L2 for multinomial LR (tuned <=2013)
+  hgb_max_iter: 300
+  hgb_learning_rate: 0.1   # tuned <=2013
+  hgb_max_leaf_nodes: 31
+  hgb_min_samples_leaf: 80
+  hgb_l2: 1.0
+
+validation:
+  # Development folds (Elo params + hyperparameters tuned here only).
+  dev_val_years: [2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013]
+  # Length of the chronological validation window (days) carved off the
+  # end of the training period for ensemble weights + calibration.
+  val_window_days: 1095
+  ensemble_weight_step: 0.05
+
+score_matrix:
+  max_goals: 10             # raised automatically if tail mass too large
+  max_tail_mass: 0.001
+
+knockout:
+  # Extra-time scoring: per-minute rate relative to regulation, then
+  # recalibrated on historical WC extra-time goal counts at train time.
+  et_minutes: 30
+  et_rate_factor: 1.0
+  # Shootout probabilities shrunk hard toward 0.5.
+  shootout_elo_weight: 0.10
+  shootout_clip: [0.45, 0.55]
+
+world_cup_2026:
+  start_date: "2026-06-11"
+  host_countries: ["United States", "Mexico", "Canada"]

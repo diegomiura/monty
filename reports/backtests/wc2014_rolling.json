@@ -1,0 +1,160 @@
+{
+  "tournament": "FIFA World Cup 2014",
+  "mode": "rolling",
+  "training_cutoff": "2014-06-12",
+  "latest_match_used": "2014-06-10",
+  "n_matches": 64,
+  "ensemble": {
+    "n": 64,
+    "log_loss": 0.9724,
+    "brier": 0.5862,
+    "rps": 0.1952,
+    "accuracy": 0.5469,
+    "balanced_accuracy": 0.4984,
+    "top_two_accuracy": 0.8438,
+    "ece": 0.0758
+  },
+  "goals": {
+    "mae_goals_a": 0.8767,
+    "mae_goals_b": 1.0322,
+    "mae_total_goals": 1.4602,
+    "rmse_goals": 1.7744,
+    "exact_score_rate_rounded": 0.125,
+    "one_goal_tolerance_rate": 0.3594,
+    "mean_pred_total": 2.592,
+    "mean_obs_total": 2.547
+  },
+  "by_stage": {
+    "group": {
+      "n": 55,
+      "log_loss": 0.9473,
+      "brier": 0.5633,
+      "rps": 0.1995,
+      "accuracy": 0.5636,
+      "balanced_accuracy": 0.4697,
+      "top_two_accuracy": 0.8182,
+      "ece": 0.0767
+    },
+    "knockout": {
+      "n": 9,
+      "log_loss": 1.1259,
+      "brier": 0.7261,
+      "rps": 0.1695,
+      "accuracy": 0.4444,
+      "balanced_accuracy": 0.5833,
+      "top_two_accuracy": 1.0,
+      "ece": 0.2688
+    }
+  },
+  "components": {
+    "elo": {
+      "n": 64,
+      "log_loss": 0.9637,
+      "brier": 0.5794,
+      "rps": 0.1896,
+      "accuracy": 0.5469,
+      "balanced_accuracy": 0.4903,
+      "top_two_accuracy": 0.8125,
+      "ece": 0.1129
+    },
+    "poisson": {
+      "n": 64,
+      "log_loss": 0.9784,
+      "brier": 0.5864,
+      "rps": 0.1945,
+      "accuracy": 0.5625,
+      "balanced_accuracy": 0.5073,
+      "top_two_accuracy": 0.8438,
+      "ece": 0.1951
+    },
+    "logistic": {
+      "n": 64,
+      "log_loss": 0.9619,
+      "brier": 0.5815,
+      "rps": 0.196,
+      "accuracy": 0.5,
+      "balanced_accuracy": 0.4548,
+      "top_two_accuracy": 0.8594,
+      "ece": 0.0856
+    },
+    "gradient_boosting": {
+      "n": 64,
+      "log_loss": 0.9998,
+      "brier": 0.5983,
+      "rps": 0.1956,
+      "accuracy": 0.5312,
+      "balanced_accuracy": 0.4851,
+      "top_two_accuracy": 0.8125,
+      "ece": 0.1413
+    }
+  },
+  "breakdowns": {
+    "elo_gap_small(<100)": {
+      "n": 28,
+      "log_loss": 1.116,
+      "brier": 0.6821,
+      "rps": 0.2441,
+      "accuracy": 0.3571,
+      "balanced_accuracy": 0.3417,
+      "top_two_accuracy": 0.7143,
+      "ece": 0.1254
+    },
+    "elo_gap_medium(100-250)": {
+      "n": 28,
+      "log_loss": 0.8696,
+      "brier": 0.5105,
+      "rps": 0.1672,
+      "accuracy": 0.7143,
+      "balanced_accuracy": 0.6,
+      "top_two_accuracy": 0.9286,
+      "ece": 0.1992
+    },
+    "elo_gap_large(>=250)": {
+      "n": 8,
+      "log_loss": 0.8294,
+      "brier": 0.5155,
+      "rps": 0.1225,
+      "accuracy": 0.625,
+      "balanced_accuracy": 0.6667,
+      "top_two_accuracy": 1.0,
+      "ece": 0.1988
+    },
+    "favorite<50%": {
+      "n": 32,
+      "log_loss": 1.0494,
+      "brier": 0.6339,
+      "rps": 0.2202,
+      "accuracy": 0.4688,
+      "balanced_accuracy": 0.4436,
+      "top_two_accuracy": 0.7812,
+      "ece": 0.0366
+    },
+    "favorite50-70%": {
+      "n": 25,
+      "log_loss": 0.885,
+      "brier": 0.5217,
+      "rps": 0.1786,
+      "accuracy": 0.64,
+      "balanced_accuracy": 0.5333,
+      "top_two_accuracy": 0.88,
+      "ece": 0.0657
+    },
+    "favorite>=70%": {
+      "n": 7,
+      "log_loss": 0.9325,
+      "brier": 0.5987,
+      "rps": 0.1403,
+      "accuracy": 0.5714,
+      "balanced_accuracy": 0.6667,
+      "top_two_accuracy": 1.0,
+      "ece": 0.2908
+    }
+  },
+  "ensemble_weights": {
+    "elo": 0.0,
+    "poisson": 0.0,
+    "logistic": 0.6,
+    "gradient_boosting": 0.4
+  },
+  "calibration_used": false
+}

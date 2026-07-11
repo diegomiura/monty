@@ -1,0 +1,5 @@
+match,kickoff,prediction_created_at,prediction_cutoff,predicted_team_a_win,predicted_draw,predicted_team_b_win,predicted_score,expected_goals_a,expected_goals_b,actual_score,actual_result,brier_score,log_loss,goal_absolute_error,correct_result,correct_exact_score,model_version,feature_version,latest_match_used,mode
+Norway v England,2026-07-11T20:00:00Z,2026-07-11T21:12:31Z,2026-07-11 20:00:00+00:00,0.2086,0.2973,0.4941,1-1,1.159,1.615,,,,,,,,0.1.0,fv1-60,2026-07-10,rolling
+Argentina v Switzerland,2026-07-11T23:00:00Z,2026-07-11T21:12:51Z,2026-07-11 23:00:00+00:00,0.5721,0.2881,0.1398,1-1,1.719,0.942,,,,,,,,0.1.0,fv1-60,2026-07-10,rolling
+Argentina v Switzerland,2026-07-11T23:00:00Z,2026-07-11T21:12:53Z,2026-07-11 23:00:00+00:00,0.5642,0.3226,0.1133,1-1,1.791,0.894,,,,,,,,0.1.0,fv1-60,2026-06-10,frozen
+Argentina v France,2026-07-19T20:00:00Z,2026-07-11T21:13:11Z,2026-07-19 20:00:00+00:00,0.3342,0.3545,0.3113,1-1,1.323,1.285,,,,,,,,0.1.0,fv1-60,2026-07-10,rolling

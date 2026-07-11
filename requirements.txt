@@ -1,0 +1,18 @@
+# Core scientific stack (all free / open source)
+pandas>=2.0
+numpy>=1.24
+scipy>=1.10
+scikit-learn>=1.3
+statsmodels>=0.14
+matplotlib>=3.7
+joblib>=1.3
+requests>=2.28
+PyYAML>=6.0
+
+# Optional gradient boosting (the system falls back to
+# sklearn.ensemble.HistGradientBoostingClassifier when absent)
+# xgboost
+# lightgbm
+
+# Testing
+pytest>=7.0

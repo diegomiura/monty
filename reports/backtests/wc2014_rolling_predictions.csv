@@ -1,0 +1,65 @@
+date,team_a,team_b,stage,p_team_a,p_draw,p_team_b,lambda_a,lambda_b,goals_a_90,goals_b_90,winner_90
+2014-06-12,Brazil,Croatia,Group,0.8472,0.1127,0.0401,2.274,0.656,3,1,team_a
+2014-06-13,Chile,Australia,Group,0.6006,0.2276,0.1719,1.708,1.046,3,1,team_a
+2014-06-13,Mexico,Cameroon,Group,0.5795,0.249,0.1715,1.41,1.1,1,0,team_a
+2014-06-13,Spain,Netherlands,Group,0.504,0.2934,0.2026,1.46,1.043,1,5,team_b
+2014-06-14,Colombia,Greece,Group,0.5363,0.2784,0.1854,1.278,1.001,3,0,team_a
+2014-06-14,England,Italy,Group,0.3928,0.3175,0.2897,1.441,1.064,1,2,team_b
+2014-06-14,Ivory Coast,Japan,Group,0.2813,0.2514,0.4672,1.41,1.422,2,1,team_a
+2014-06-14,Uruguay,Costa Rica,Group,0.5572,0.2485,0.1943,1.63,0.954,1,3,team_b
+2014-06-15,Argentina,Bosnia and Herzegovina,Group,0.7341,0.1776,0.0882,1.761,0.941,2,1,team_a
+2014-06-15,France,Honduras,Group,0.6464,0.2184,0.1352,1.768,0.868,3,0,team_a
+2014-06-15,Switzerland,Ecuador,Group,0.2823,0.3039,0.4138,1.372,1.127,2,1,team_a
+2014-06-16,Germany,Portugal,Group,0.488,0.2277,0.2843,1.637,1.152,4,0,team_a
+2014-06-16,Ghana,United States,Group,0.2896,0.2803,0.4301,1.107,1.514,1,2,team_b
+2014-06-16,Iran,Nigeria,Group,0.3107,0.292,0.3972,1.332,1.192,0,0,draw
+2014-06-17,Belgium,Algeria,Group,0.5238,0.2726,0.2036,1.497,1.083,2,1,team_a
+2014-06-17,Brazil,Mexico,Group,0.7716,0.1474,0.081,2.179,0.722,0,0,draw
+2014-06-17,Russia,South Korea,Group,0.4274,0.2902,0.2824,1.648,0.936,1,1,draw
+2014-06-18,Australia,Netherlands,Group,0.0987,0.1662,0.735,0.797,2.191,2,3,team_b
+2014-06-18,Cameroon,Croatia,Group,0.2661,0.275,0.4589,1.106,1.317,0,4,team_b
+2014-06-18,Spain,Chile,Group,0.436,0.2726,0.2913,1.487,1.129,0,2,team_b
+2014-06-19,Colombia,Ivory Coast,Group,0.5043,0.2847,0.2111,1.514,1.065,2,1,team_a
+2014-06-19,Japan,Greece,Group,0.5056,0.2623,0.232,1.245,1.313,0,0,draw
+2014-06-19,Uruguay,England,Group,0.3021,0.2889,0.409,1.202,1.299,2,1,team_a
+2014-06-20,Honduras,Ecuador,Group,0.2038,0.2346,0.5616,1.082,1.48,1,2,team_b
+2014-06-20,Italy,Costa Rica,Group,0.4881,0.2685,0.2433,1.407,1.118,0,1,team_b
+2014-06-20,Switzerland,France,Group,0.2004,0.2617,0.5379,1.086,1.43,2,5,team_b
+2014-06-21,Argentina,Iran,Group,0.6811,0.2144,0.1046,1.609,0.939,1,0,team_a
+2014-06-21,Germany,Ghana,Group,0.7614,0.143,0.0956,2.186,0.845,2,2,draw
+2014-06-21,Nigeria,Bosnia and Herzegovina,Group,0.4528,0.2621,0.2851,1.326,1.253,1,0,team_a
+2014-06-22,Belgium,Russia,Group,0.338,0.3334,0.3285,1.27,1.261,1,0,team_a
+2014-06-22,South Korea,Algeria,Group,0.5307,0.2493,0.22,1.216,1.309,2,4,team_b
+2014-06-22,United States,Portugal,Group,0.3049,0.3028,0.3923,1.341,1.279,2,2,draw
+2014-06-23,Australia,Spain,Group,0.1456,0.2176,0.6368,0.868,1.902,0,3,team_b
+2014-06-23,Brazil,Cameroon,Group,0.8731,0.1041,0.0228,2.639,0.547,4,1,team_a
+2014-06-23,Croatia,Mexico,Group,0.2574,0.269,0.4736,1.14,1.335,1,3,team_b
+2014-06-23,Netherlands,Chile,Group,0.4323,0.2633,0.3044,1.502,1.196,2,0,team_a
+2014-06-24,Costa Rica,England,Group,0.3149,0.2823,0.4028,1.139,1.295,0,0,draw
+2014-06-24,Greece,Ivory Coast,Group,0.2733,0.2689,0.4577,1.204,1.281,2,1,team_a
+2014-06-24,Italy,Uruguay,Group,0.3463,0.2666,0.387,1.158,1.416,0,1,team_b
+2014-06-24,Japan,Colombia,Group,0.1961,0.288,0.5159,0.975,1.679,1,4,team_b
+2014-06-25,Bosnia and Herzegovina,Iran,Group,0.2937,0.263,0.4433,1.138,1.37,3,1,team_a
+2014-06-25,Ecuador,France,Group,0.2048,0.2214,0.5738,0.946,1.784,0,0,draw
+2014-06-25,Honduras,Switzerland,Group,0.2429,0.2664,0.4906,0.971,1.611,0,3,team_b
+2014-06-25,Nigeria,Argentina,Group,0.1343,0.2194,0.6463,0.888,1.638,2,3,team_b
+2014-06-26,Algeria,Russia,Group,0.2104,0.314,0.4755,1.108,1.379,1,1,draw
+2014-06-26,Portugal,Ghana,Group,0.4554,0.2651,0.2795,1.565,1.11,2,1,team_a
+2014-06-26,South Korea,Belgium,Group,0.2382,0.2621,0.4997,0.899,1.828,0,1,team_b
+2014-06-26,United States,Germany,Group,0.1817,0.1772,0.6411,1.093,1.75,0,1,team_b
+2014-06-28,Brazil,Chile,Round of 16,0.6811,0.2098,0.1091,1.875,0.783,1,1,draw
+2014-06-28,Colombia,Uruguay,Round of 16,0.455,0.3217,0.2233,1.343,1.043,2,0,team_a
+2014-06-29,Costa Rica,Greece,Round of 16,0.4507,0.3239,0.2254,1.097,1.085,1,1,draw
+2014-06-29,Netherlands,Mexico,Round of 16,0.4525,0.3185,0.229,1.51,0.952,2,1,team_a
+2014-06-30,France,Nigeria,Round of 16,0.5806,0.2551,0.1644,1.548,0.889,2,0,team_a
+2014-06-30,Germany,Algeria,Round of 16,0.754,0.1739,0.0721,2.02,0.822,0,0,draw
+2014-07-01,Argentina,Switzerland,Round of 16,0.576,0.2954,0.1286,1.514,0.917,0,0,draw
+2014-07-01,Belgium,United States,Round of 16,0.3394,0.3477,0.313,1.299,1.168,0,0,draw
+2014-07-04,Brazil,Colombia,Quarter-finals,0.5339,0.2679,0.1982,1.537,0.949,2,1,team_a
+2014-07-04,France,Germany,Quarter-finals,0.3702,0.2458,0.3839,1.214,1.366,0,1,team_b
+2014-07-05,Argentina,Belgium,Quarter-finals,0.5305,0.2693,0.2002,1.407,0.999,1,0,team_a
+2014-07-05,Netherlands,Costa Rica,Quarter-finals,0.6222,0.224,0.1539,1.799,0.831,0,0,draw
+2014-07-08,Brazil,Germany,Semi-finals,0.5494,0.2105,0.2401,1.521,1.05,1,7,team_b
+2014-07-09,Netherlands,Argentina,Semi-finals,0.3866,0.2889,0.3245,1.23,1.165,0,0,draw
+2014-07-12,Brazil,Netherlands,Match for third place,0.3778,0.3064,0.3158,1.264,1.096,0,3,team_b
+2014-07-13,Germany,Argentina,Final,0.4662,0.274,0.2598,1.336,1.038,0,0,draw

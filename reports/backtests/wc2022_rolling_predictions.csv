@@ -1,0 +1,65 @@
+date,team_a,team_b,stage,p_team_a,p_draw,p_team_b,lambda_a,lambda_b,goals_a_90,goals_b_90,winner_90
+2022-11-20,Qatar,Ecuador,Group,0.3035,0.2967,0.3998,1.145,1.094,0,2,team_b
+2022-11-21,England,Iran,Group,0.5406,0.2371,0.2223,1.292,1.144,6,2,team_a
+2022-11-21,Senegal,Netherlands,Group,0.1377,0.2131,0.6492,0.933,1.788,0,2,team_b
+2022-11-21,United States,Wales,Group,0.4392,0.2747,0.2861,1.493,0.94,1,1,draw
+2022-11-22,Argentina,Saudi Arabia,Group,0.7805,0.1705,0.049,2.049,0.601,1,2,team_b
+2022-11-22,Denmark,Tunisia,Group,0.5906,0.2266,0.1828,1.42,1.008,0,0,draw
+2022-11-22,France,Australia,Group,0.6463,0.2076,0.1461,1.547,0.993,4,1,team_a
+2022-11-22,Mexico,Poland,Group,0.4876,0.2502,0.2622,1.324,1.121,0,0,draw
+2022-11-23,Belgium,Canada,Group,0.6255,0.1933,0.1812,1.475,1.188,1,0,team_a
+2022-11-23,Germany,Japan,Group,0.5039,0.2303,0.2658,1.415,1.272,1,2,team_b
+2022-11-23,Morocco,Croatia,Group,0.2756,0.2957,0.4287,1.196,1.346,0,0,draw
+2022-11-23,Spain,Costa Rica,Group,0.6186,0.2481,0.1333,1.567,0.902,7,0,team_a
+2022-11-24,Brazil,Serbia,Group,0.7563,0.1641,0.0797,1.947,0.854,2,0,team_a
+2022-11-24,Portugal,Ghana,Group,0.7746,0.1548,0.0706,1.962,0.721,3,2,team_a
+2022-11-24,Switzerland,Cameroon,Group,0.6994,0.1883,0.1123,1.532,0.989,1,0,team_a
+2022-11-24,Uruguay,South Korea,Group,0.5515,0.2422,0.2062,1.337,1.056,0,0,draw
+2022-11-25,England,United States,Group,0.5564,0.2171,0.2266,1.402,1.087,0,0,draw
+2022-11-25,Netherlands,Ecuador,Group,0.455,0.2715,0.2735,1.526,0.951,1,1,draw
+2022-11-25,Qatar,Senegal,Group,0.4372,0.285,0.2778,1.26,1.1,1,3,team_b
+2022-11-25,Wales,Iran,Group,0.4257,0.2805,0.2937,1.051,1.381,0,2,team_b
+2022-11-26,Argentina,Mexico,Group,0.607,0.2423,0.1508,1.673,0.801,2,0,team_a
+2022-11-26,France,Denmark,Group,0.4876,0.2298,0.2825,1.337,1.181,2,1,team_a
+2022-11-26,Poland,Saudi Arabia,Group,0.3868,0.2849,0.3283,1.188,1.111,2,0,team_a
+2022-11-26,Tunisia,Australia,Group,0.3822,0.2822,0.3355,1.255,1.042,0,1,team_b
+2022-11-27,Belgium,Morocco,Group,0.6708,0.1961,0.1331,1.487,1.063,0,2,team_b
+2022-11-27,Croatia,Canada,Group,0.3958,0.2569,0.3473,1.337,1.206,4,1,team_a
+2022-11-27,Japan,Costa Rica,Group,0.492,0.2721,0.2359,1.482,0.981,0,1,team_b
+2022-11-27,Spain,Germany,Group,0.604,0.2044,0.1916,1.702,1.044,1,1,draw
+2022-11-28,Brazil,Switzerland,Group,0.718,0.1845,0.0974,1.989,0.759,1,0,team_a
+2022-11-28,Cameroon,Serbia,Group,0.1849,0.2083,0.6068,0.946,1.678,3,3,draw
+2022-11-28,Portugal,Uruguay,Group,0.3992,0.2453,0.3555,1.313,1.082,2,0,team_a
+2022-11-28,South Korea,Ghana,Group,0.5859,0.2405,0.1736,1.658,0.847,2,3,team_b
+2022-11-29,Ecuador,Senegal,Group,0.5341,0.2586,0.2073,1.279,1.018,1,2,team_b
+2022-11-29,Iran,United States,Group,0.2922,0.2693,0.4385,1.151,1.199,0,1,team_b
+2022-11-29,Qatar,Netherlands,Group,0.1344,0.2212,0.6444,0.869,1.846,0,2,team_b
+2022-11-29,Wales,England,Group,0.1837,0.2129,0.6034,0.846,1.729,0,3,team_b
+2022-11-30,Australia,Denmark,Group,0.2226,0.2435,0.5339,1.036,1.416,1,0,team_a
+2022-11-30,Poland,Argentina,Group,0.1044,0.1863,0.7093,0.789,1.809,0,2,team_b
+2022-11-30,Saudi Arabia,Mexico,Group,0.2261,0.2946,0.4793,0.961,1.244,1,2,team_b
+2022-11-30,Tunisia,France,Group,0.1033,0.1792,0.7175,0.926,1.534,1,0,team_a
+2022-12-01,Canada,Morocco,Group,0.2767,0.2562,0.4671,1.044,1.462,1,2,team_b
+2022-12-01,Costa Rica,Germany,Group,0.2147,0.2534,0.532,1.128,1.415,2,4,team_b
+2022-12-01,Croatia,Belgium,Group,0.2769,0.2429,0.4803,1.3,1.296,0,0,draw
+2022-12-01,Japan,Spain,Group,0.1694,0.1881,0.6425,0.994,1.572,2,1,team_a
+2022-12-02,Cameroon,Brazil,Group,0.0237,0.0863,0.8901,0.571,2.599,1,0,team_a
+2022-12-02,Ghana,Uruguay,Group,0.1133,0.2082,0.6785,0.834,1.582,0,2,team_b
+2022-12-02,Serbia,Switzerland,Group,0.2774,0.2201,0.5025,1.31,1.292,2,3,team_b
+2022-12-02,South Korea,Portugal,Group,0.1492,0.2057,0.6451,0.912,1.73,2,1,team_a
+2022-12-03,Argentina,Australia,Round of 16,0.6447,0.277,0.0784,1.683,0.722,2,1,team_a
+2022-12-03,Netherlands,United States,Round of 16,0.4166,0.3553,0.228,1.396,0.947,3,1,team_a
+2022-12-04,England,Senegal,Round of 16,0.5142,0.316,0.1698,1.421,0.954,3,0,team_a
+2022-12-04,France,Poland,Round of 16,0.5261,0.3049,0.169,1.422,0.973,3,1,team_a
+2022-12-05,Brazil,South Korea,Round of 16,0.6701,0.2509,0.079,1.75,0.766,4,1,team_a
+2022-12-05,Japan,Croatia,Round of 16,0.3078,0.3595,0.3327,1.149,1.168,1,1,draw
+2022-12-06,Morocco,Spain,Round of 16,0.1981,0.3529,0.449,1.077,1.244,0,0,draw
+2022-12-06,Portugal,Switzerland,Round of 16,0.4159,0.3315,0.2527,1.433,0.986,6,1,team_a
+2022-12-09,Croatia,Brazil,Quarter-finals,0.1112,0.1864,0.7024,0.878,1.731,0,0,draw
+2022-12-09,Netherlands,Argentina,Quarter-finals,0.2058,0.2781,0.5161,1.129,1.422,2,2,draw
+2022-12-10,England,France,Quarter-finals,0.4046,0.234,0.3614,1.32,1.178,1,2,team_b
+2022-12-10,Morocco,Portugal,Quarter-finals,0.2019,0.2252,0.5729,1.065,1.393,1,0,team_a
+2022-12-13,Argentina,Croatia,Semi-finals,0.6538,0.2094,0.1368,1.566,0.914,3,0,team_a
+2022-12-14,France,Morocco,Semi-finals,0.4533,0.256,0.2907,1.188,1.249,2,0,team_a
+2022-12-17,Croatia,Morocco,Match for third place,0.2878,0.3687,0.3434,1.003,1.186,2,1,team_a
+2022-12-18,Argentina,France,Final,0.4621,0.3459,0.1921,1.439,0.966,2,2,draw
