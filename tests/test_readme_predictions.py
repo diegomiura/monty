@@ -4,10 +4,13 @@ import json
 import pandas as pd
 
 from src.visualization.readme_predictions import (
+    _GENERATED_LINE,
     END_MARK,
     START_MARK,
+    current_section,
     parse_kickoff_utc,
     render_section,
+    section_equivalent,
     splice_readme,
     upcoming_fixtures,
 )
@@ -84,6 +87,15 @@ def test_render_section_contains_all_stat_blocks():
         "Penalty shootout", "high", "1–1",
     ):
         assert needle in md, needle
+
+
+def test_section_equivalent_ignores_only_the_timestamp():
+    md = render_section([_fake_pred()], mode="rolling")
+    a = current_section(md)
+    stamp_only = _GENERATED_LINE.sub("Generated **some other time**.", a)
+    assert section_equivalent(a, stamp_only)
+    assert not section_equivalent(a, a.replace("41.2%", "50.0%"))
+    assert not section_equivalent(a, None)
 
 
 def test_splice_is_idempotent_and_preserves_rest():

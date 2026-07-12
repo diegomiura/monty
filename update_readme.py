@@ -22,9 +22,11 @@ from src.data.merge import load_matches, refresh_dataset
 from src.data.validate import staleness_warning
 from src.utils.config import load_config, resolve
 from src.visualization.readme_predictions import (
+    current_section,
     load_upcoming,
     predict_round,
     render_section,
+    section_equivalent,
     splice_readme,
 )
 
@@ -36,6 +38,8 @@ def main() -> int:
     ap.add_argument("--readme", default=None, help="README path (default: repo README.md)")
     ap.add_argument("--update-data", action="store_true", help="refresh the dataset first")
     ap.add_argument("--dry-run", action="store_true", help="print the section, do not write README")
+    ap.add_argument("--force", action="store_true",
+                    help="rewrite even when only the generation timestamp would change")
     args = ap.parse_args()
 
     cfg = load_config()
@@ -72,7 +76,12 @@ def main() -> int:
         return 0
 
     readme = Path(args.readme) if args.readme else resolve("README.md")
-    readme.write_text(splice_readme(readme.read_text(), section))
+    text = readme.read_text()
+    if not args.force and section_equivalent(current_section(text), current_section(section)):
+        print("README section already current (only the timestamp would change); "
+              "not rewriting. Use --force to rewrite anyway.")
+        return 0
+    readme.write_text(splice_readme(text, section))
     names = ", ".join(f"{p['team_a']} v {p['team_b']}" for p in preds)
     print(f"README updated: {len(preds)} fixture(s) ({names}), mode={args.mode}")
     return 0

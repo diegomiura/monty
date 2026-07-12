@@ -235,6 +235,25 @@ def render_section(preds: list[dict], mode: str) -> str:
     return "\n".join(header) + "\n\n" + "\n\n---\n\n".join(parts) + "\n\n" + END_MARK
 
 
+_GENERATED_LINE = re.compile(r"^Generated \*\*.*$", re.MULTILINE)
+
+
+def current_section(text: str) -> str | None:
+    """The block between the markers (either a full README or a rendered
+    section), or None when the markers are absent."""
+    if START_MARK in text and END_MARK in text:
+        return text.split(START_MARK, 1)[1].split(END_MARK, 1)[0]
+    return None
+
+
+def section_equivalent(a: str | None, b: str | None) -> bool:
+    """True when two section bodies differ only in the generation-timestamp
+    line — used to avoid commit churn from scheduled regeneration."""
+    if a is None or b is None:
+        return False
+    return _GENERATED_LINE.sub("", a).strip() == _GENERATED_LINE.sub("", b).strip()
+
+
 def splice_readme(readme_text: str, section: str) -> str:
     """Replace the marker block (idempotent). If the markers are missing,
     insert the block just above '## Contents', or append as a fallback."""

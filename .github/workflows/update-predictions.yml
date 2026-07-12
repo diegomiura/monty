@@ -1,0 +1,68 @@
+# Refresh the README's next-round prediction section on a schedule.
+#
+# Flow: download latest results -> reproduce the locked model bundle
+# (training cutoff is PINNED; seeds are fixed and pre-cutoff data is
+# stable, so every run yields the same model — retraining here is a
+# build step, not a retune, in line with the tournament-lock rule) ->
+# render predictions into README.md -> commit only when the predictions
+# actually changed (update_readme.py skips timestamp-only rewrites).
+#
+# TRAIN_CUTOFF must be bumped manually if a new bundle is ever locked
+# for a future tournament.
+name: update-readme-predictions
+
+on:
+  schedule:
+    - cron: "0 6,18 * * *" # twice daily (UTC); results land within a day
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-readme-predictions
+  cancel-in-progress: false
+
+env:
+  TRAIN_CUTOFF: "2026-07-11"
+
+jobs:
+  update:
+    if: github.repository == 'diegomiura/monty' # don't run the cron on forks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+
+      - name: Refresh dataset from free public sources
+        run: python update_data.py --include-world-cup-2026
+
+      - name: Restore locked model bundle
+        id: bundle
+        uses: actions/cache@v4
+        with:
+          path: models/
+          key: bundle-${{ env.TRAIN_CUTOFF }}-${{ hashFiles('requirements.txt', 'config/default.yaml', 'train.py', 'src/**/*.py') }}
+
+      - name: Reproduce locked model (cache miss only, ~3 min)
+        if: steps.bundle.outputs.cache-hit != 'true'
+        run: python train.py --cutoff "$TRAIN_CUTOFF"
+
+      - name: Render next-round predictions into README
+        run: python update_readme.py
+
+      - name: Commit refreshed README when predictions changed
+        run: |
+          if git diff --quiet -- README.md; then
+            echo "Predictions unchanged; nothing to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md data/metadata
+          git commit -m "Auto-update README predictions (scheduled)"
+          git push origin HEAD:main
