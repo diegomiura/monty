@@ -1,0 +1,874 @@
+{
+  "tournament": "FIFA World Cup 2026",
+  "mode": "frozen",
+  "prediction_cutoff": "2026-07-11 00:00:00+00:00",
+  "created_at": "2026-07-12T02:14:03Z",
+  "method": "exact bracket enumeration over pairwise staged-knockout advancement probabilities; features frozen at the cutoff (hypothetical results do not update Elo/form within a path)",
+  "remaining_matches": [
+    {
+      "num": 99,
+      "date": "2026-07-11",
+      "round": "Quarter-final",
+      "slot1": "Norway",
+      "slot2": "England"
+    },
+    {
+      "num": 100,
+      "date": "2026-07-11",
+      "round": "Quarter-final",
+      "slot1": "Argentina",
+      "slot2": "Switzerland"
+    },
+    {
+      "num": 101,
+      "date": "2026-07-14",
+      "round": "Semi-final",
+      "slot1": "France",
+      "slot2": "Spain"
+    },
+    {
+      "num": 102,
+      "date": "2026-07-15",
+      "round": "Semi-final",
+      "slot1": "W99",
+      "slot2": "W100"
+    },
+    {
+      "num": 103,
+      "date": "2026-07-18",
+      "round": "Match for third place",
+      "slot1": "L101",
+      "slot2": "L102"
+    },
+    {
+      "num": 104,
+      "date": "2026-07-19",
+      "round": "Final",
+      "slot1": "W101",
+      "slot2": "W102"
+    }
+  ],
+  "teams": [
+    {
+      "team": "Spain",
+      "p_reach_round_of_32": 1.0,
+      "p_reach_round_of_16": 1.0,
+      "p_reach_quarter_final": 1.0,
+      "p_reach_semi_final": 1.0,
+      "p_reach_final": 0.6262,
+      "p_third_place": 0.244,
+      "p_runner_up": 0.2634,
+      "p_champion": 0.3628
+    },
+    {
+      "team": "Argentina",
+      "p_reach_round_of_32": 1.0,
+      "p_reach_round_of_16": 1.0,
+      "p_reach_quarter_final": 1.0,
+      "p_reach_semi_final": 0.7611,
+      "p_reach_final": 0.5279,
+      "p_third_place": 0.1389,
+      "p_runner_up": 0.2293,
+      "p_champion": 0.2986
+    },
+    {
+      "team": "France",
+      "p_reach_round_of_32": 1.0,
+      "p_reach_round_of_16": 1.0,
+      "p_reach_quarter_final": 1.0,
+      "p_reach_semi_final": 1.0,
+      "p_reach_final": 0.3738,
+      "p_third_place": 0.3352,
+      "p_runner_up": 0.2015,
+      "p_champion": 0.1723
+    },
+    {
+      "team": "England",
+      "p_reach_round_of_32": 1.0,
+      "p_reach_round_of_16": 1.0,
+      "p_reach_quarter_final": 1.0,
+      "p_reach_semi_final": 0.6587,
+      "p_reach_final": 0.2755,
+      "p_third_place": 0.1691,
+      "p_runner_up": 0.1624,
+      "p_champion": 0.1131
+    },
+    {
+      "team": "Switzerland",
+      "p_reach_round_of_32": 1.0,
+      "p_reach_round_of_16": 1.0,
+      "p_reach_quarter_final": 1.0,
+      "p_reach_semi_final": 0.2389,
+      "p_reach_final": 0.1036,
+      "p_third_place": 0.0427,
+      "p_runner_up": 0.074,
+      "p_champion": 0.0296
+    },
+    {
+      "team": "Norway",
+      "p_reach_round_of_32": 1.0,
+      "p_reach_round_of_16": 1.0,
+      "p_reach_quarter_final": 1.0,
+      "p_reach_semi_final": 0.3413,
+      "p_reach_final": 0.093,
+      "p_third_place": 0.0701,
+      "p_runner_up": 0.0693,
+      "p_champion": 0.0237
+    },
+    {
+      "team": "Algeria",
+      "p_reach_round_of_32": 1.0,
+      "p_reach_round_of_16": 0.0,
+      "p_reach_quarter_final": 0.0,
+      "p_reach_semi_final": 0.0,
+      "p_reach_final": 0.0,
+      "p_third_place": 0.0,
+      "p_runner_up": 0.0,
+      "p_champion": 0.0
+    },
+    {
+      "team": "Australia",
+      "p_reach_round_of_32": 1.0,
+      "p_reach_round_of_16": 0.0,
+      "p_reach_quarter_final": 0.0,
+      "p_reach_semi_final": 0.0,
+      "p_reach_final": 0.0,
+      "p_third_place": 0.0,
+      "p_runner_up": 0.0,
+      "p_champion": 0.0
+    },
+    {
+      "team": "Austria",
+      "p_reach_round_of_32": 1.0,
+      "p_reach_round_of_16": 0.0,
+      "p_reach_quarter_final": 0.0,
+      "p_reach_semi_final": 0.0,
+      "p_reach_final": 0.0,
+      "p_third_place": 0.0,
+      "p_runner_up": 0.0,
+      "p_champion": 0.0
+    },
+    {
+      "team": "Belgium",
+      "p_reach_round_of_32": 1.0,
+      "p_reach_round_of_16": 1.0,
+      "p_reach_quarter_final": 1.0,
+      "p_reach_semi_final": 0.0,
+      "p_reach_final": 0.0,
+      "p_third_place": 0.0,
+      "p_runner_up": 0.0,
+      "p_champion": 0.0
+    },
+    {
+      "team": "Bosnia and Herzegovina",
+      "p_reach_round_of_32": 1.0,
+      "p_reach_round_of_16": 0.0,
+      "p_reach_quarter_final": 0.0,
+      "p_reach_semi_final": 0.0,
+      "p_reach_final": 0.0,
+      "p_third_place": 0.0,
+      "p_runner_up": 0.0,
+      "p_champion": 0.0
+    },
+    {
+      "team": "Brazil",
+      "p_reach_round_of_32": 1.0,
+      "p_reach_round_of_16": 1.0,
+      "p_reach_quarter_final": 0.0,
+      "p_reach_semi_final": 0.0,
+      "p_reach_final": 0.0,
+      "p_third_place": 0.0,
+      "p_runner_up": 0.0,
+      "p_champion": 0.0
+    },
+    {
+      "team": "Canada",
+      "p_reach_round_of_32": 1.0,
+      "p_reach_round_of_16": 1.0,
+      "p_reach_quarter_final": 0.0,
+      "p_reach_semi_final": 0.0,
+      "p_reach_final": 0.0,
+      "p_third_place": 0.0,
+      "p_runner_up": 0.0,
+      "p_champion": 0.0
+    },
+    {
+      "team": "Cape Verde",
+      "p_reach_round_of_32": 1.0,
+      "p_reach_round_of_16": 0.0,
+      "p_reach_quarter_final": 0.0,
+      "p_reach_semi_final": 0.0,
+      "p_reach_final": 0.0,
+      "p_third_place": 0.0,
+      "p_runner_up": 0.0,
+      "p_champion": 0.0
+    },
+    {
+      "team": "Colombia",
+      "p_reach_round_of_32": 1.0,
+      "p_reach_round_of_16": 1.0,
+      "p_reach_quarter_final": 0.0,
+      "p_reach_semi_final": 0.0,
+      "p_reach_final": 0.0,
+      "p_third_place": 0.0,
+      "p_runner_up": 0.0,
+      "p_champion": 0.0
+    },
+    {
+      "team": "Croatia",
+      "p_reach_round_of_32": 1.0,
+      "p_reach_round_of_16": 0.0,
+      "p_reach_quarter_final": 0.0,
+      "p_reach_semi_final": 0.0,
+      "p_reach_final": 0.0,
+      "p_third_place": 0.0,
+      "p_runner_up": 0.0,
+      "p_champion": 0.0
+    },
+    {
+      "team": "DR Congo",
+      "p_reach_round_of_32": 1.0,
+      "p_reach_round_of_16": 0.0,
+      "p_reach_quarter_final": 0.0,
+      "p_reach_semi_final": 0.0,
+      "p_reach_final": 0.0,
+      "p_third_place": 0.0,
+      "p_runner_up": 0.0,
+      "p_champion": 0.0
+    },
+    {
+      "team": "Ecuador",
+      "p_reach_round_of_32": 1.0,
+      "p_reach_round_of_16": 0.0,
+      "p_reach_quarter_final": 0.0,
+      "p_reach_semi_final": 0.0,
+      "p_reach_final": 0.0,
+      "p_third_place": 0.0,
+      "p_runner_up": 0.0,
+      "p_champion": 0.0
+    },
+    {
+      "team": "Egypt",
+      "p_reach_round_of_32": 1.0,
+      "p_reach_round_of_16": 1.0,
+      "p_reach_quarter_final": 0.0,
+      "p_reach_semi_final": 0.0,
+      "p_reach_final": 0.0,
+      "p_third_place": 0.0,
+      "p_runner_up": 0.0,
+      "p_champion": 0.0
+    },
+    {
+      "team": "Germany",
+      "p_reach_round_of_32": 1.0,
+      "p_reach_round_of_16": 0.0,
+      "p_reach_quarter_final": 0.0,
+      "p_reach_semi_final": 0.0,
+      "p_reach_final": 0.0,
+      "p_third_place": 0.0,
+      "p_runner_up": 0.0,
+      "p_champion": 0.0
+    },
+    {
+      "team": "Ghana",
+      "p_reach_round_of_32": 1.0,
+      "p_reach_round_of_16": 0.0,
+      "p_reach_quarter_final": 0.0,
+      "p_reach_semi_final": 0.0,
+      "p_reach_final": 0.0,
+      "p_third_place": 0.0,
+      "p_runner_up": 0.0,
+      "p_champion": 0.0
+    },
+    {
+      "team": "Ivory Coast",
+      "p_reach_round_of_32": 1.0,
+      "p_reach_round_of_16": 0.0,
+      "p_reach_quarter_final": 0.0,
+      "p_reach_semi_final": 0.0,
+      "p_reach_final": 0.0,
+      "p_third_place": 0.0,
+      "p_runner_up": 0.0,
+      "p_champion": 0.0
+    },
+    {
+      "team": "Japan",
+      "p_reach_round_of_32": 1.0,
+      "p_reach_round_of_16": 0.0,
+      "p_reach_quarter_final": 0.0,
+      "p_reach_semi_final": 0.0,
+      "p_reach_final": 0.0,
+      "p_third_place": 0.0,
+      "p_runner_up": 0.0,
+      "p_champion": 0.0
+    },
+    {
+      "team": "Mexico",
+      "p_reach_round_of_32": 1.0,
+      "p_reach_round_of_16": 1.0,
+      "p_reach_quarter_final": 0.0,
+      "p_reach_semi_final": 0.0,
+      "p_reach_final": 0.0,
+      "p_third_place": 0.0,
+      "p_runner_up": 0.0,
+      "p_champion": 0.0
+    },
+    {
+      "team": "Morocco",
+      "p_reach_round_of_32": 1.0,
+      "p_reach_round_of_16": 1.0,
+      "p_reach_quarter_final": 1.0,
+      "p_reach_semi_final": 0.0,
+      "p_reach_final": 0.0,
+      "p_third_place": 0.0,
+      "p_runner_up": 0.0,
+      "p_champion": 0.0
+    },
+    {
+      "team": "Netherlands",
+      "p_reach_round_of_32": 1.0,
+      "p_reach_round_of_16": 0.0,
+      "p_reach_quarter_final": 0.0,
+      "p_reach_semi_final": 0.0,
+      "p_reach_final": 0.0,
+      "p_third_place": 0.0,
+      "p_runner_up": 0.0,
+      "p_champion": 0.0
+    },
+    {
+      "team": "Paraguay",
+      "p_reach_round_of_32": 1.0,
+      "p_reach_round_of_16": 1.0,
+      "p_reach_quarter_final": 0.0,
+      "p_reach_semi_final": 0.0,
+      "p_reach_final": 0.0,
+      "p_third_place": 0.0,
+      "p_runner_up": 0.0,
+      "p_champion": 0.0
+    },
+    {
+      "team": "Portugal",
+      "p_reach_round_of_32": 1.0,
+      "p_reach_round_of_16": 1.0,
+      "p_reach_quarter_final": 0.0,
+      "p_reach_semi_final": 0.0,
+      "p_reach_final": 0.0,
+      "p_third_place": 0.0,
+      "p_runner_up": 0.0,
+      "p_champion": 0.0
+    },
+    {
+      "team": "Senegal",
+      "p_reach_round_of_32": 1.0,
+      "p_reach_round_of_16": 0.0,
+      "p_reach_quarter_final": 0.0,
+      "p_reach_semi_final": 0.0,
+      "p_reach_final": 0.0,
+      "p_third_place": 0.0,
+      "p_runner_up": 0.0,
+      "p_champion": 0.0
+    },
+    {
+      "team": "South Africa",
+      "p_reach_round_of_32": 1.0,
+      "p_reach_round_of_16": 0.0,
+      "p_reach_quarter_final": 0.0,
+      "p_reach_semi_final": 0.0,
+      "p_reach_final": 0.0,
+      "p_third_place": 0.0,
+      "p_runner_up": 0.0,
+      "p_champion": 0.0
+    },
+    {
+      "team": "Sweden",
+      "p_reach_round_of_32": 1.0,
+      "p_reach_round_of_16": 0.0,
+      "p_reach_quarter_final": 0.0,
+      "p_reach_semi_final": 0.0,
+      "p_reach_final": 0.0,
+      "p_third_place": 0.0,
+      "p_runner_up": 0.0,
+      "p_champion": 0.0
+    },
+    {
+      "team": "United States",
+      "p_reach_round_of_32": 1.0,
+      "p_reach_round_of_16": 1.0,
+      "p_reach_quarter_final": 0.0,
+      "p_reach_semi_final": 0.0,
+      "p_reach_final": 0.0,
+      "p_third_place": 0.0,
+      "p_runner_up": 0.0,
+      "p_champion": 0.0
+    }
+  ],
+  "evaluated_pairings": [
+    {
+      "date": "2026-07-11",
+      "team_a": "England",
+      "team_b": "Norway",
+      "outcome_90": {
+        "team_a_win": 0.4626,
+        "draw": 0.3501,
+        "team_b_win": 0.1873
+      },
+      "knockout": {
+        "team_a_advances": 0.6587,
+        "team_b_advances": 0.3413,
+        "extra_time": 0.3501,
+        "penalty_shootout": 0.1798
+      },
+      "expected_goals": {
+        "team_a": 1.64,
+        "team_b": 1.148
+      }
+    },
+    {
+      "date": "2026-07-11",
+      "team_a": "Argentina",
+      "team_b": "Switzerland",
+      "outcome_90": {
+        "team_a_win": 0.5639,
+        "draw": 0.323,
+        "team_b_win": 0.113
+      },
+      "knockout": {
+        "team_a_advances": 0.7611,
+        "team_b_advances": 0.2389,
+        "extra_time": 0.323,
+        "penalty_shootout": 0.1671
+      },
+      "expected_goals": {
+        "team_a": 1.791,
+        "team_b": 0.894
+      }
+    },
+    {
+      "date": "2026-07-14",
+      "team_a": "France",
+      "team_b": "Spain",
+      "outcome_90": {
+        "team_a_win": 0.2191,
+        "draw": 0.3498,
+        "team_b_win": 0.4311
+      },
+      "knockout": {
+        "team_a_advances": 0.3738,
+        "team_b_advances": 0.6262,
+        "extra_time": 0.3498,
+        "penalty_shootout": 0.1793
+      },
+      "expected_goals": {
+        "team_a": 1.158,
+        "team_b": 1.642
+      }
+    },
+    {
+      "date": "2026-07-15",
+      "team_a": "Argentina",
+      "team_b": "Norway",
+      "outcome_90": {
+        "team_a_win": 0.6169,
+        "draw": 0.2859,
+        "team_b_win": 0.0972
+      },
+      "knockout": {
+        "team_a_advances": 0.7865,
+        "team_b_advances": 0.2135,
+        "extra_time": 0.2859,
+        "penalty_shootout": 0.1449
+      },
+      "expected_goals": {
+        "team_a": 1.79,
+        "team_b": 1.034
+      }
+    },
+    {
+      "date": "2026-07-15",
+      "team_a": "Norway",
+      "team_b": "Switzerland",
+      "outcome_90": {
+        "team_a_win": 0.2797,
+        "draw": 0.345,
+        "team_b_win": 0.3753
+      },
+      "knockout": {
+        "team_a_advances": 0.4602,
+        "team_b_advances": 0.5398,
+        "extra_time": 0.345,
+        "penalty_shootout": 0.1752
+      },
+      "expected_goals": {
+        "team_a": 1.54,
+        "team_b": 1.331
+      }
+    },
+    {
+      "date": "2026-07-15",
+      "team_a": "Argentina",
+      "team_b": "England",
+      "outcome_90": {
+        "team_a_win": 0.4347,
+        "draw": 0.3953,
+        "team_b_win": 0.1701
+      },
+      "knockout": {
+        "team_a_advances": 0.6454,
+        "team_b_advances": 0.3546,
+        "extra_time": 0.3953,
+        "penalty_shootout": 0.2177
+      },
+      "expected_goals": {
+        "team_a": 1.335,
+        "team_b": 1.102
+      }
+    },
+    {
+      "date": "2026-07-15",
+      "team_a": "England",
+      "team_b": "Switzerland",
+      "outcome_90": {
+        "team_a_win": 0.4034,
+        "draw": 0.376,
+        "team_b_win": 0.2206
+      },
+      "knockout": {
+        "team_a_advances": 0.6211,
+        "team_b_advances": 0.3789,
+        "extra_time": 0.376,
+        "penalty_shootout": 0.198
+      },
+      "expected_goals": {
+        "team_a": 1.641,
+        "team_b": 0.993
+      }
+    },
+    {
+      "date": "2026-07-18",
+      "team_a": "France",
+      "team_b": "Norway",
+      "outcome_90": {
+        "team_a_win": 0.5004,
+        "draw": 0.3225,
+        "team_b_win": 0.1771
+      },
+      "knockout": {
+        "team_a_advances": 0.6765,
+        "team_b_advances": 0.3235,
+        "extra_time": 0.3225,
+        "penalty_shootout": 0.1609
+      },
+      "expected_goals": {
+        "team_a": 1.654,
+        "team_b": 1.309
+      }
+    },
+    {
+      "date": "2026-07-18",
+      "team_a": "Argentina",
+      "team_b": "France",
+      "outcome_90": {
+        "team_a_win": 0.4292,
+        "draw": 0.3834,
+        "team_b_win": 0.1874
+      },
+      "knockout": {
+        "team_a_advances": 0.6397,
+        "team_b_advances": 0.3603,
+        "extra_time": 0.3834,
+        "penalty_shootout": 0.2029
+      },
+      "expected_goals": {
+        "team_a": 1.522,
+        "team_b": 1.112
+      }
+    },
+    {
+      "date": "2026-07-18",
+      "team_a": "France",
+      "team_b": "Switzerland",
+      "outcome_90": {
+        "team_a_win": 0.4407,
+        "draw": 0.3529,
+        "team_b_win": 0.2063
+      },
+      "knockout": {
+        "team_a_advances": 0.6407,
+        "team_b_advances": 0.3593,
+        "extra_time": 0.3529,
+        "penalty_shootout": 0.1812
+      },
+      "expected_goals": {
+        "team_a": 1.655,
+        "team_b": 1.131
+      }
+    },
+    {
+      "date": "2026-07-18",
+      "team_a": "England",
+      "team_b": "France",
+      "outcome_90": {
+        "team_a_win": 0.2824,
+        "draw": 0.3975,
+        "team_b_win": 0.3201
+      },
+      "knockout": {
+        "team_a_advances": 0.487,
+        "team_b_advances": 0.513,
+        "extra_time": 0.3975,
+        "penalty_shootout": 0.2112
+      },
+      "expected_goals": {
+        "team_a": 1.394,
+        "team_b": 1.234
+      }
+    },
+    {
+      "date": "2026-07-18",
+      "team_a": "Norway",
+      "team_b": "Spain",
+      "outcome_90": {
+        "team_a_win": 0.1091,
+        "draw": 0.2628,
+        "team_b_win": 0.6282
+      },
+      "knockout": {
+        "team_a_advances": 0.2135,
+        "team_b_advances": 0.7865,
+        "extra_time": 0.2628,
+        "penalty_shootout": 0.1284
+      },
+      "expected_goals": {
+        "team_a": 1.078,
+        "team_b": 1.932
+      }
+    },
+    {
+      "date": "2026-07-18",
+      "team_a": "Argentina",
+      "team_b": "Spain",
+      "outcome_90": {
+        "team_a_win": 0.3286,
+        "draw": 0.3911,
+        "team_b_win": 0.2803
+      },
+      "knockout": {
+        "team_a_advances": 0.5214,
+        "team_b_advances": 0.4786,
+        "extra_time": 0.3911,
+        "penalty_shootout": 0.211
+      },
+      "expected_goals": {
+        "team_a": 1.253,
+        "team_b": 1.298
+      }
+    },
+    {
+      "date": "2026-07-18",
+      "team_a": "Spain",
+      "team_b": "Switzerland",
+      "outcome_90": {
+        "team_a_win": 0.5738,
+        "draw": 0.2972,
+        "team_b_win": 0.129
+      },
+      "knockout": {
+        "team_a_advances": 0.7581,
+        "team_b_advances": 0.2419,
+        "extra_time": 0.2972,
+        "penalty_shootout": 0.1482
+      },
+      "expected_goals": {
+        "team_a": 1.933,
+        "team_b": 0.932
+      }
+    },
+    {
+      "date": "2026-07-18",
+      "team_a": "England",
+      "team_b": "Spain",
+      "outcome_90": {
+        "team_a_win": 0.1974,
+        "draw": 0.3649,
+        "team_b_win": 0.4377
+      },
+      "knockout": {
+        "team_a_advances": 0.3649,
+        "team_b_advances": 0.6351,
+        "extra_time": 0.3649,
+        "penalty_shootout": 0.1951
+      },
+      "expected_goals": {
+        "team_a": 1.148,
+        "team_b": 1.441
+      }
+    },
+    {
+      "date": "2026-07-19",
+      "team_a": "France",
+      "team_b": "Norway",
+      "outcome_90": {
+        "team_a_win": 0.5004,
+        "draw": 0.3225,
+        "team_b_win": 0.1771
+      },
+      "knockout": {
+        "team_a_advances": 0.6765,
+        "team_b_advances": 0.3235,
+        "extra_time": 0.3225,
+        "penalty_shootout": 0.1609
+      },
+      "expected_goals": {
+        "team_a": 1.654,
+        "team_b": 1.309
+      }
+    },
+    {
+      "date": "2026-07-19",
+      "team_a": "Argentina",
+      "team_b": "France",
+      "outcome_90": {
+        "team_a_win": 0.4292,
+        "draw": 0.3834,
+        "team_b_win": 0.1874
+      },
+      "knockout": {
+        "team_a_advances": 0.6397,
+        "team_b_advances": 0.3603,
+        "extra_time": 0.3834,
+        "penalty_shootout": 0.2029
+      },
+      "expected_goals": {
+        "team_a": 1.522,
+        "team_b": 1.112
+      }
+    },
+    {
+      "date": "2026-07-19",
+      "team_a": "France",
+      "team_b": "Switzerland",
+      "outcome_90": {
+        "team_a_win": 0.4407,
+        "draw": 0.3529,
+        "team_b_win": 0.2063
+      },
+      "knockout": {
+        "team_a_advances": 0.6407,
+        "team_b_advances": 0.3593,
+        "extra_time": 0.3529,
+        "penalty_shootout": 0.1812
+      },
+      "expected_goals": {
+        "team_a": 1.655,
+        "team_b": 1.131
+      }
+    },
+    {
+      "date": "2026-07-19",
+      "team_a": "England",
+      "team_b": "France",
+      "outcome_90": {
+        "team_a_win": 0.2824,
+        "draw": 0.3975,
+        "team_b_win": 0.3201
+      },
+      "knockout": {
+        "team_a_advances": 0.487,
+        "team_b_advances": 0.513,
+        "extra_time": 0.3975,
+        "penalty_shootout": 0.2112
+      },
+      "expected_goals": {
+        "team_a": 1.394,
+        "team_b": 1.234
+      }
+    },
+    {
+      "date": "2026-07-19",
+      "team_a": "Norway",
+      "team_b": "Spain",
+      "outcome_90": {
+        "team_a_win": 0.1091,
+        "draw": 0.2628,
+        "team_b_win": 0.6282
+      },
+      "knockout": {
+        "team_a_advances": 0.2135,
+        "team_b_advances": 0.7865,
+        "extra_time": 0.2628,
+        "penalty_shootout": 0.1284
+      },
+      "expected_goals": {
+        "team_a": 1.078,
+        "team_b": 1.932
+      }
+    },
+    {
+      "date": "2026-07-19",
+      "team_a": "Argentina",
+      "team_b": "Spain",
+      "outcome_90": {
+        "team_a_win": 0.3286,
+        "draw": 0.3911,
+        "team_b_win": 0.2803
+      },
+      "knockout": {
+        "team_a_advances": 0.5214,
+        "team_b_advances": 0.4786,
+        "extra_time": 0.3911,
+        "penalty_shootout": 0.211
+      },
+      "expected_goals": {
+        "team_a": 1.253,
+        "team_b": 1.298
+      }
+    },
+    {
+      "date": "2026-07-19",
+      "team_a": "Spain",
+      "team_b": "Switzerland",
+      "outcome_90": {
+        "team_a_win": 0.5738,
+        "draw": 0.2972,
+        "team_b_win": 0.129
+      },
+      "knockout": {
+        "team_a_advances": 0.7581,
+        "team_b_advances": 0.2419,
+        "extra_time": 0.2972,
+        "penalty_shootout": 0.1482
+      },
+      "expected_goals": {
+        "team_a": 1.933,
+        "team_b": 0.932
+      }
+    },
+    {
+      "date": "2026-07-19",
+      "team_a": "England",
+      "team_b": "Spain",
+      "outcome_90": {
+        "team_a_win": 0.1974,
+        "draw": 0.3649,
+        "team_b_win": 0.4377
+      },
+      "knockout": {
+        "team_a_advances": 0.3649,
+        "team_b_advances": 0.6351,
+        "extra_time": 0.3649,
+        "penalty_shootout": 0.1951
+      },
+      "expected_goals": {
+        "team_a": 1.148,
+        "team_b": 1.441
+      }
+    }
+  ],
+  "model_information": {
+    "model_version": "0.2.0",
+    "feature_version": "fv1-60",
+    "training_cutoff": "2026-06-11",
+    "feature_cutoff": "2026-06-11",
+    "latest_match_in_features": "2026-06-10"
+  }
+}

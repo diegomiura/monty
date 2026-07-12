@@ -6,7 +6,13 @@ import pandas as pd
 
 from src.features.build_features import FEATURE_COLUMNS, FeatureBuilder
 from src.models.train_pipeline import COMPONENT_NAMES
-from src.prediction.score_matrix import build_matrix, markets, outcome_probs, top_scorelines
+from src.prediction.score_matrix import (
+    apply_dixon_coles,
+    build_matrix,
+    markets,
+    outcome_probs,
+    top_scorelines,
+)
 from src.prediction.simulate_knockout import knockout_probs
 
 
@@ -70,18 +76,27 @@ def predict_fixture(
     neutral: bool = True,
     team_a_home: bool = False,
     feature_cutoff: pd.Timestamp | None = None,
+    fb: FeatureBuilder | None = None,
 ) -> dict:
     """Predict one fixture. `feature_cutoff` controls which completed
     matches feed Elo/form: frozen mode passes the tournament start; rolling
     mode passes the prediction cutoff. Only matches with date strictly
-    before the cutoff's date are used (conservative same-day rule)."""
+    before the cutoff's date are used (conservative same-day rule).
+
+    A prebuilt `fb` (already advanced to the same cutoff) can be passed to
+    amortize state-building over many fixtures, e.g. bracket simulation."""
     cfg = bundle.cfg
     cutoff = feature_cutoff if feature_cutoff is not None else kickoff
     # Internal match dates are tz-naive day stamps; normalize both timestamps.
     cutoff_day = pd.Timestamp(cutoff.tz_convert("UTC").date()) if getattr(cutoff, "tzinfo", None) else pd.Timestamp(cutoff.date())
     kickoff_day = pd.Timestamp(kickoff.tz_convert("UTC").date()) if getattr(kickoff, "tzinfo", None) else pd.Timestamp(kickoff.date())
-    fb = FeatureBuilder(cfg)
-    fb.advance(matches, cutoff_day)
+    if fb is None:
+        fb = FeatureBuilder(cfg)
+        fb.advance(matches, cutoff_day)
+    else:
+        assert fb.processed_through == cutoff_day, (
+            f"prebuilt FeatureBuilder advanced to {fb.processed_through}, expected {cutoff_day}"
+        )
     row = fb.fixture_row(
         team_a, team_b, kickoff_day, competition, stage=stage, neutral=neutral, team_a_home=team_a_home
     )
@@ -94,6 +109,8 @@ def predict_fixture(
 
     sm_cfg = cfg["score_matrix"]
     m, tail = build_matrix(la, lb, int(sm_cfg["max_goals"]), float(sm_cfg["max_tail_mass"]))
+    dc_rho = float(getattr(bundle.models["poisson"], "rho_", 0.0))
+    m = apply_dixon_coles(m, la, lb, dc_rho)
     # Rescale exact scorelines to the calibrated W/D/L probabilities so the
     # displayed scores are consistent with the headline outcome probabilities.
     grid = m / m.sum()
@@ -148,6 +165,7 @@ def predict_fixture(
             "data_sources": ["martj42/international_results", "openfootball/worldcup.json"],
             "ensemble_weights": {n: round(float(w), 3) for n, w in zip(COMPONENT_NAMES, bundle.weights)},
             "calibration_used": bool(bundle.use_calibration),
+            "dixon_coles_rho": round(dc_rho, 4),
         },
     }
     if (stage or "").lower() in {"knockout"} or row["knockout"] == 1.0:

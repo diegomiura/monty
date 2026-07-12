@@ -29,17 +29,17 @@ from src.models.baselines import EloProbabilityModel
 from src.models.calibrate import IdentityCalibrator, MultinomialRecalibrator
 from src.models.ensemble import blend, select_weights
 from src.models.outcome import make_gradient_boosting, make_logistic
-from src.models.poisson import PoissonGoalModel
+from src.models.poisson import PoissonGoalModel, scoreline_log_likelihood
 from src.utils.logging import get_logger
 
 log = get_logger(__name__)
 
-MODEL_VERSION = "0.1.0"
+MODEL_VERSION = "0.2.0"
 FEATURE_VERSION = "fv1-" + str(len(FEATURE_COLUMNS))
 COMPONENT_NAMES = ["elo", "poisson", "logistic", "gradient_boosting"]
 
 
-def fit_components(feats: pd.DataFrame, cfg: dict) -> dict:
+def fit_components(feats: pd.DataFrame, cfg: dict, estimate_dc_rho: bool = False) -> dict:
     y = feats["outcome"].to_numpy()
     models = {
         "elo": EloProbabilityModel().fit(feats, y),
@@ -48,11 +48,48 @@ def fit_components(feats: pd.DataFrame, cfg: dict) -> dict:
             feats["goals_a_90"].to_numpy(float),
             feats["goals_b_90"].to_numpy(float),
             feats["goals_90_confirmed"].to_numpy(),
+            estimate_rho=estimate_dc_rho,
         ),
         "logistic": make_logistic(cfg).fit(feats, y),
         "gradient_boosting": make_gradient_boosting(cfg).fit(feats, y),
     }
     return models
+
+
+def dixon_coles_gate(poisson: PoissonGoalModel, val: pd.DataFrame) -> dict:
+    """Keep/drop decision for the DC correction on an unseen chronological
+    window (spec rule: never add the correction unless it improves unseen
+    results). Compares exact-score log-likelihood and W/D/L log loss of the
+    Poisson component with rho=0 vs the training-window rho estimate; on a
+    drop decision the model's rho is reset to 0."""
+    rho_hat = float(getattr(poisson, "rho_", 0.0))
+    confirmed = val["goals_90_confirmed"].to_numpy(bool)
+    sub = val[confirmed]
+    la, lb = poisson.predict_lambdas(sub)
+    ga = sub["goals_a_90"].to_numpy(float)
+    gb = sub["goals_b_90"].to_numpy(float)
+    ll_ind = scoreline_log_likelihood(ga, gb, la, lb, 0.0)
+    ll_dc = scoreline_log_likelihood(ga, gb, la, lb, rho_hat)
+
+    y = val["outcome"].to_numpy()
+    poisson.rho_ = 0.0
+    wdl_ind = log_loss(y, poisson.predict_proba(val))
+    poisson.rho_ = rho_hat
+    wdl_dc = log_loss(y, poisson.predict_proba(val))
+
+    keep = rho_hat != 0.0 and ll_dc > ll_ind and wdl_dc <= wdl_ind + 1e-4
+    if not keep:
+        poisson.rho_ = 0.0
+    report = {
+        "rho_train_mle": round(rho_hat, 4),
+        "val_scoreline_ll_independent": round(ll_ind, 5),
+        "val_scoreline_ll_dixon_coles": round(ll_dc, 5),
+        "val_wdl_log_loss_independent": round(wdl_ind, 5),
+        "val_wdl_log_loss_dixon_coles": round(wdl_dc, 5),
+        "kept": bool(keep),
+    }
+    log.info("dixon-coles gate: %s", report)
+    return report
 
 
 def component_probs(models: dict, X: pd.DataFrame) -> dict[str, np.ndarray]:
@@ -133,7 +170,12 @@ def train_bundle(
         )
 
     log.info("fit=%d  val_a=%d  val_b=%d  cutoff=%s", len(fit_df), len(val_a), len(val_b), cutoff.date())
-    models = fit_components(fit_df, cfg)
+    models = fit_components(fit_df, cfg, estimate_dc_rho=True)
+
+    # Dixon-Coles keep/drop on val-A, decided before ensemble-weight
+    # selection so the weights see the poisson component in its final form.
+    dc_report = dixon_coles_gate(models["poisson"], val_a)
+    use_dc = dc_report["kept"]
 
     pa = component_probs(models, val_a)
     ya = val_a["outcome"].to_numpy()
@@ -154,12 +196,17 @@ def train_bundle(
     # before refit) — model-derived interpretability for the tree model.
     perm_imp = permutation_importance_gb(models["gradient_boosting"], val_b, yb)
 
-    # Refit components on all pre-cutoff data with selections frozen.
-    models = fit_components(usable, cfg)
+    # Refit components on all pre-cutoff data with selections frozen (the
+    # DC keep/drop decision is frozen; rho itself is re-estimated on the
+    # full window like every other model parameter).
+    models = fit_components(usable, cfg, estimate_dc_rho=use_dc)
+    if not use_dc:
+        models["poisson"].rho_ = 0.0
 
     imp = global_importance(models, usable, cfg)
 
     validation_report = {
+        "dixon_coles": {**dc_report, "rho_refit": round(float(models["poisson"].rho_), 4)},
         "val_a": {"n": int(len(val_a)), "log_loss": round(ll_a, 4)},
         "val_b": {
             "n": int(len(val_b)),

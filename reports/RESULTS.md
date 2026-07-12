@@ -1,4 +1,4 @@
-# Results — v0.1.0 (generated 2026-07-11)
+# Results — v0.2.0 (generated 2026-07-11; v0.1.0 numbers unchanged where noted)
 
 Data: 49,503 completed senior men's internationals, 1872-11-30 → 2026-07-10
 (98 completed 2026 World Cup matches, cross-verified 98/98 between two
@@ -38,8 +38,8 @@ update Elo/form for later match-days (the model itself stays locked).
 | 2018 | rolling |  64 |     0.9763 |  0.5825 | 0.2055 | 0.5156 | 0.1832 |           1.1469 |          2.473 |         2.594 |
 | 2022 | frozen  |  64 |     1.0599 |  0.6211 | 0.2234 | 0.5469 | 0.1509 |           1.4790 |          2.526 |         2.625 |
 | 2022 | rolling |  64 |     1.0795 |  0.6326 | 0.2295 | 0.5156 | 0.1426 |           1.4832 |          2.500 |         2.625 |
-| 2026 | frozen  |  98 |     0.8897 |  0.5300 | 0.1626 | 0.6531 | 0.1344 |           1.3947 |          2.693 |         2.867 |
-| 2026 | rolling |  98 |     0.9014 |  0.5363 | 0.1662 | 0.6429 | 0.1275 |           1.3977 |          2.706 |         2.867 |
+| 2026 | frozen  |  98 |     0.8895 |  0.5300 | 0.1626 | 0.6531 | 0.1345 |           1.3947 |          2.693 |         2.867 |
+| 2026 | rolling |  98 |     0.9012 |  0.5362 | 0.1662 | 0.6429 | 0.1276 |           1.3977 |          2.706 |         2.867 |
 
 Pooled frozen (290 matches): log loss 0.9732, Brier 0.5790, RPS 0.1951,
 accuracy 57.6%, ECE 0.054 (`reports/figures/wc_all_frozen_reliability.png`).
@@ -63,11 +63,58 @@ Honest observations, not hidden:
   `*_predictions.csv` files; reliability diagrams for all three outcomes
   and goal diagnostics per tournament under `reports/figures/`.
 
+## Dixon-Coles low-score correction (new in v0.2.0)
+
+The exact-score model now supports the Dixon-Coles (1997) dependence
+correction on the 0-0/1-0/0-1/1-1 cells. rho is profile-MLE-estimated on
+the training window given the Poisson model's lambdas, then **gated on an
+unseen chronological validation window**: it is kept only if the exact-score
+log-likelihood improves and the Poisson W/D/L log loss does not degrade.
+The decision is made per training cutoff — never on the tournament being
+predicted:
+
+| training cutoff | rho (train MLE) | val scoreline LL (indep → DC) | val W/D/L LL (indep → DC) | kept |
+|---|---|---|---|---|
+| 2014 WC (2014-06-12) | −0.0325 | −2.97062 → −2.97039 | 0.91501 → 0.91461 | yes |
+| 2018 WC (2018-06-14) | −0.0325 | −2.89094 → −2.89175 | 0.88217 → 0.88203 | **no** |
+| 2022 WC (2022-11-20) | −0.0275 | −2.80697 → −2.80711 | 0.85904 → 0.85799 | **no** |
+| 2026 frozen (2026-06-11) | −0.0225 | −2.89280 → −2.89255 | 0.88448 → 0.88389 | yes |
+| 2026 rolling (2026-07-11) | −0.0225 | −2.88407 → −2.88364 | 0.88574 → 0.88499 | yes |
+
+Where the gate drops it (2022), the pipeline reproduces the uncorrected
+v0.1.0 results exactly. Where it is kept, headline W/D/L backtest metrics
+are essentially unchanged (the Poisson component has a small ensemble
+weight); the gain is in scoreline/market probabilities, and it is small —
+consistent with the literature. The estimated rho ≈ −0.02…−0.03 slightly
+raises 0-0 and 1-1 and lowers 1-0 and 0-1.
+
+## 2026 remaining-bracket forecast (new in v0.2.0)
+
+`simulate_tournament.py` propagates pairwise advancement probabilities
+through the remaining fixtures by exact enumeration (features frozen at the
+forecast cutoff; see module docstring for assumptions). As of 2026-07-11
+(before the last two quarter-finals):
+
+| team | reach SF | reach final | third | champion (rolling) | champion (frozen) |
+|---|---|---|---|---|---|
+| Spain | 100% | 52.9% | 31.0% | **32.0%** | 36.3% |
+| France | 100% | 47.1% | 33.4% | **27.2%** | 17.2% |
+| Argentina | 74.3% | 49.5% | 12.3% | **24.5%** | 29.9% |
+| England | 65.9% | 29.6% | 13.9% | **11.3%** | 11.3% |
+| Switzerland | 25.7% | 10.8% | 3.8% | **2.8%** | 3.0% |
+| Norway | 34.1% | 10.0% | 5.5% | **2.3%** | 2.4% |
+
+The frozen/rolling gap is informative: rolling has seen France's strong
+tournament (and Spain's tougher path), frozen only pre-tournament form.
+Forecasts are saved to timestamped JSON plus the append-only
+`reports/predictions/wc2026_tournament_forecasts.csv`.
+
 ## Final 2026 configuration
 
 * Ensemble weights (selected on pre-cutoff validation window):
   logistic 0.80, gradient boosting 0.15, Poisson 0.05, Elo 0.0
   (rolling bundle, cutoff 2026-07-11).
+* Dixon-Coles rho −0.0225 (kept by the validation gate; see above).
 * Multinomial recalibration evaluated and **dropped** (val-B log loss
   0.8408 raw vs 0.8433 calibrated).
 * Extra-time model: from 22 confirmed WC ET matches before the cutoff —
@@ -103,10 +150,13 @@ All 2026 predictions are appended (never rewritten) to
 3. **Stage labels exist only for World Cups**, so the knockout feature is 0
    for other competitions' knockout matches (the CLI accepts an explicit
    `--stage knockout` for any prediction).
-4. **Independent Poisson scoreline model**: no Dixon-Coles low-score
-   correlation correction yet (to be added only if it improves chronological
-   validation); scorelines are rescaled to the calibrated W/D/L
-   probabilities to keep outputs consistent.
+4. **Scoreline model**: independent Poisson with a validation-gated
+   Dixon-Coles low-score correction (kept at the 2026 cutoffs, rho ≈ −0.022);
+   scorelines are rescaled to the calibrated W/D/L probabilities to keep
+   outputs consistent. Extra-time scorelines remain independent Poisson —
+   rho is estimated on 90-minute scores only. The bracket forecast freezes
+   features at the cutoff: hypothetical earlier results do not update
+   Elo/form for later rounds within a simulated path.
 5. **No player-level data** (injuries, lineups, xG). The system is
    results-only by design of v1; free advanced sources can be added behind
    the same cutoff rules.
@@ -119,9 +169,13 @@ All 2026 predictions are appended (never rewritten) to
 
 ## Recommended future improvements
 
-* Dixon-Coles correction + bivariate Poisson, gated on validation gains.
+* ~~Dixon-Coles correction~~ (done in v0.2.0, validation-gated); a bivariate
+  Poisson remains untested.
+* ~~Knockout-bracket simulation~~ (done in v0.2.0, exact enumeration);
+  group-stage simulation (advancement from points/goal-difference scenarios)
+  would extend it to pre-bracket forecasts.
 * Free FIFA-ranking history as an optional feature block.
 * ET-split backfill for Euros/Copa América from openfootball text files.
 * Bootstrap ensembles for calibrated uncertainty intervals.
-* Group-stage simulation to produce advancement probabilities from the
-  group context (points, goal difference scenarios).
+* Within-path feature updates in the bracket forecast (let a simulated
+  upset update Elo/form for later simulated rounds).
