@@ -58,7 +58,14 @@ python predict.py --team-a "Argentina" --team-b "France" \
 ```
 
 You get a console report plus a machine-readable JSON block. Run the tests
-any time with `python -m pytest tests/ -q` (34 tests, a few seconds).
+any time with `python -m pytest tests/ -q` (53 tests, a few seconds).
+
+There is also a tournament-level view — each remaining team's probability
+of winning the 2026 World Cup:
+
+```bash
+python simulate_tournament.py --mode rolling
+```
 
 ## What the commands do
 
@@ -118,6 +125,26 @@ Team names follow the dataset's conventions (`United States`, `South Korea`,
 `Ivory Coast`, `Turkey`...). Common variants (`USA`, `Korea Republic`,
 `Côte d'Ivoire`, `Türkiye`) resolve automatically; anything unknown gets
 close-match suggestions instead of a wrong guess.
+
+### `simulate_tournament.py` — forecast the rest of the 2026 bracket
+
+```bash
+python simulate_tournament.py --mode rolling            # who wins from here?
+python simulate_tournament.py --mode frozen \
+    --model models/bundle_2026_frozen.joblib            # pre-tournament view
+```
+
+Reads the remaining knockout fixtures from the cached openfootball file,
+resolves `W99`-style slot references through the bracket, and propagates the
+model's pairwise advancement probabilities by **exact enumeration** (no
+Monte Carlo noise) into each team's probability of reaching the semi-final
+and final, finishing third, and winning the World Cup. Every pairwise
+probability is exactly what `predict.py` would report for that fixture.
+
+Documented approximation: features are frozen at the forecast cutoff, so a
+hypothetical earlier upset does not update Elo/form for later rounds within
+a simulated path. Forecasts are saved under `reports/predictions/`
+(timestamped JSON plus an append-only per-team CSV log).
 
 ### `backtest.py` — evaluate honestly
 
@@ -219,6 +246,11 @@ stoppage time — extra time and shootouts are reported only in `knockout`.
 3. **Models** — Elo-probability logistic, team-rows Poisson (→ exact-score
    matrix), multinomial logistic regression, and sklearn
    HistGradientBoosting, all symmetrized so team order doesn't matter.
+   The score matrix carries a Dixon-Coles low-score correction whose rho is
+   estimated on the training window and **kept only when it improves an
+   unseen chronological window** — the gate decides per training cutoff
+   (kept at the 2026 cutoffs with rho ≈ −0.022; dropped e.g. at the 2022
+   cutoff, reproducing the uncorrected model exactly).
 4. **Ensemble & calibration** — nonnegative weights summing to 1, grid-
    searched on a pre-cutoff validation window; multinomial recalibration is
    kept only if it improves a later held-out window (it currently doesn't,
@@ -250,7 +282,7 @@ predictions, and figures: [reports/RESULTS.md](reports/RESULTS.md).
 | 2014 | 0.9996 | 0.9724 | 51.6% |
 | 2018 | 0.9881 | 0.9763 | 54.7% |
 | 2022 | 1.0599 | 1.0795 | 54.7% |
-| 2026 (98 matches so far) | 0.8897 | 0.9014 | 65.3% |
+| 2026 (98 matches so far) | 0.8895 | 0.9012 | 65.3% |
 
 Pooled frozen calibration across all four tournaments (290 matches,
 ECE 0.054):
@@ -283,13 +315,14 @@ config/default.yaml     all tunable parameters (documented)
 update_data.py          download + canonical dataset + freshness report
 train.py                train a bundle through a cutoff
 predict.py              predict any fixture
+simulate_tournament.py  remaining-bracket forecast (champion probabilities)
 backtest.py             chronological validation + WC backtests
 src/data/               download, cleaning, team names, 2026 workflow
 src/features/           Elo, rolling form, chronological feature builder
-src/models/             baselines, Poisson, classifiers, ensemble, calibration
+src/models/             baselines, Poisson (+ Dixon-Coles), classifiers, ensemble
 src/evaluation/         metrics, backtests, tuning (dev-years only)
-src/prediction/         score matrix, knockout staging, match predictor
-tests/                  34 tests incl. leakage & extra-time guarantees
+src/prediction/         score matrix, knockout staging, match + bracket predictors
+tests/                  53 tests incl. leakage & extra-time guarantees
 reports/                results, backtests, figures, append-only prediction log
 notebooks/              thin display notebooks (logic lives in src/)
 ```
@@ -302,8 +335,9 @@ Ideas and where they go:
   wire into `FeatureBuilder.fixture_row`)
 * FIFA rankings → `src/features/rankings.py` (stub with the cutoff rule
   documented)
-* Dixon-Coles low-score correction → `src/prediction/score_matrix.py`
 * new models → `src/models/`, add to `COMPONENT_NAMES` in `train_pipeline.py`
+* group-stage simulation (advancement from group context) →
+  `src/prediction/simulate_tournament.py` currently starts at the bracket
 
 The gate for *any* change: `python backtest.py --validate` must improve.
 See "Rules of the road" #6.

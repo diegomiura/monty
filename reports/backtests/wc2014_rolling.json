@@ -59,13 +59,13 @@
     },
     "poisson": {
       "n": 64,
-      "log_loss": 0.9784,
-      "brier": 0.5864,
+      "log_loss": 0.9772,
+      "brier": 0.5863,
       "rps": 0.1945,
       "accuracy": 0.5625,
       "balanced_accuracy": 0.5073,
-      "top_two_accuracy": 0.8438,
-      "ece": 0.1951
+      "top_two_accuracy": 0.8125,
+      "ece": 0.1839
     },
     "logistic": {
       "n": 64,

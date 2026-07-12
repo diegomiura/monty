@@ -1,9 +1,9 @@
 """Exact-score probability matrix from expected-goal rates.
 
-Independent Poisson assumption (documented): P(score a-b) =
-Pois(a; lambda_a) * Pois(b; lambda_b). A Dixon-Coles low-score correction
-was considered for v1 but is only to be added if it improves unseen
-chronological validation (see README limitations).
+Base assumption: P(score a-b) = Pois(a; lambda_a) * Pois(b; lambda_b).
+`apply_dixon_coles` adds the Dixon-Coles (1997) low-score dependence
+correction; its rho parameter is estimated at train time and kept only when
+it improves unseen chronological validation (see train_pipeline).
 """
 from __future__ import annotations
 
@@ -22,6 +22,24 @@ def build_matrix(lambda_a: float, lambda_b: float, max_goals: int = 10, max_tail
         if tail <= max_tail:
             return m, float(tail)
     return m, float(tail)
+
+
+def apply_dixon_coles(m: np.ndarray, lambda_a: float, lambda_b: float, rho: float) -> np.ndarray:
+    """Dixon-Coles tau correction on the four low-score cells.
+
+    tau(0,0)=1-la*lb*rho, tau(0,1)=1+la*rho, tau(1,0)=1+lb*rho,
+    tau(1,1)=1-rho. The four adjustments cancel exactly, so total mass is
+    preserved (a rescale guards the rare case where a tau had to be clipped
+    positive). rho < 0 shifts mass toward 0-0 and 1-1.
+    """
+    if rho == 0.0 or m.shape[0] < 2:
+        return m
+    out = m.copy()
+    out[0, 0] *= max(1.0 - lambda_a * lambda_b * rho, 1e-9)
+    out[0, 1] *= max(1.0 + lambda_a * rho, 1e-9)
+    out[1, 0] *= max(1.0 + lambda_b * rho, 1e-9)
+    out[1, 1] *= max(1.0 - rho, 1e-9)
+    return out * (m.sum() / out.sum())
 
 
 def outcome_probs(m: np.ndarray) -> np.ndarray:
