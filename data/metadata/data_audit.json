@@ -12,12 +12,12 @@
     "penalty_goals_a": 0.9996161848776842,
     "penalty_goals_b": 0.9996161848776842
   },
-  "retrieved_at": "2026-07-11T20:48:53Z",
+  "retrieved_at": "2026-07-12T01:40:03Z",
   "n_matches_added_vs_previous_build": 0,
   "sources": [
     {
       "source": "results",
-      "path": "/Users/diegomiura/Desktop/footy/data/raw/results.csv",
+      "path": "data/raw/results.csv",
       "url": "https://raw.githubusercontent.com/martj42/international_results/master/results.csv",
       "retrieved_at": "2026-07-11T20:47:06Z",
       "bytes": 3726382,
@@ -25,7 +25,7 @@
     },
     {
       "source": "shootouts",
-      "path": "/Users/diegomiura/Desktop/footy/data/raw/shootouts.csv",
+      "path": "data/raw/shootouts.csv",
       "url": "https://raw.githubusercontent.com/martj42/international_results/master/shootouts.csv",
       "retrieved_at": "2026-07-11T20:47:06Z",
       "bytes": 29001,
@@ -33,7 +33,7 @@
     },
     {
       "source": "former_names",
-      "path": "/Users/diegomiura/Desktop/footy/data/raw/former_names.csv",
+      "path": "data/raw/former_names.csv",
       "url": "https://raw.githubusercontent.com/martj42/international_results/master/former_names.csv",
       "retrieved_at": "2026-07-11T20:47:06Z",
       "bytes": 1691,
@@ -41,7 +41,7 @@
     },
     {
       "source": "worldcup_2010",
-      "path": "/Users/diegomiura/Desktop/footy/data/raw/worldcup_2010.json",
+      "path": "data/raw/worldcup_2010.json",
       "url": "https://raw.githubusercontent.com/openfootball/worldcup.json/master/2010/worldcup.json",
       "retrieved_at": "2026-07-11T20:47:06Z",
       "bytes": 14787,
@@ -49,7 +49,7 @@
     },
     {
       "source": "worldcup_2014",
-      "path": "/Users/diegomiura/Desktop/footy/data/raw/worldcup_2014.json",
+      "path": "data/raw/worldcup_2014.json",
       "url": "https://raw.githubusercontent.com/openfootball/worldcup.json/master/2014/worldcup.json",
       "retrieved_at": "2026-07-11T20:47:06Z",
       "bytes": 25864,
@@ -57,7 +57,7 @@
     },
     {
       "source": "worldcup_2018",
-      "path": "/Users/diegomiura/Desktop/footy/data/raw/worldcup_2018.json",
+      "path": "data/raw/worldcup_2018.json",
       "url": "https://raw.githubusercontent.com/openfootball/worldcup.json/master/2018/worldcup.json",
       "retrieved_at": "2026-07-11T20:47:06Z",
       "bytes": 25988,
@@ -65,7 +65,7 @@
     },
     {
       "source": "worldcup_2022",
-      "path": "/Users/diegomiura/Desktop/footy/data/raw/worldcup_2022.json",
+      "path": "data/raw/worldcup_2022.json",
       "url": "https://raw.githubusercontent.com/openfootball/worldcup.json/master/2022/worldcup.json",
       "retrieved_at": "2026-07-11T20:47:07Z",
       "bytes": 26072,
@@ -73,7 +73,7 @@
     },
     {
       "source": "worldcup_2026",
-      "path": "/Users/diegomiura/Desktop/footy/data/raw/worldcup_2026.json",
+      "path": "data/raw/worldcup_2026.json",
       "url": "https://raw.githubusercontent.com/openfootball/worldcup.json/master/2026/worldcup.json",
       "retrieved_at": "2026-07-11T20:47:07Z",
       "bytes": 41046,

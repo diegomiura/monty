@@ -107,13 +107,19 @@ def download_all(config: dict | None = None, offline: bool = False) -> dict[str,
 
 def source_audit(paths: dict[str, Path]) -> list[dict]:
     """Machine-readable audit of every raw source used."""
+    from src.utils.config import PROJECT_ROOT
+
     audit = []
     for name, path in paths.items():
         meta = json.loads(_meta_path(path).read_text()) if _meta_path(path).exists() else {}
+        try:  # record project-relative paths (portable, no local usernames)
+            path_str = str(Path(path).resolve().relative_to(PROJECT_ROOT))
+        except ValueError:
+            path_str = str(path)
         audit.append(
             {
                 "source": name,
-                "path": str(path),
+                "path": path_str,
                 "url": meta.get("url"),
                 "retrieved_at": meta.get("retrieved_at"),
                 "bytes": meta.get("bytes"),
