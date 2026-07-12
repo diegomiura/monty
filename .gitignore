@@ -9,3 +9,6 @@ data/interim/
 data/processed/
 models/*.joblib
 reports/figures/*.png
+# ...except the two summary figures embedded in the README
+!reports/figures/wc_all_frozen_reliability.png
+!reports/figures/importance_gb_permutation.png

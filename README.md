@@ -1,158 +1,334 @@
 # International Soccer Predictor — 2026 World Cup
 
 A reproducible, leakage-safe statistical/ML pipeline that predicts senior
-men's international matches: 90-minute win/draw/win probabilities, expected
-goals, scorelines, goal markets, and knockout advancement — focused on the
-2026 FIFA World Cup. Free data and open-source software only; no API keys
-required; runs locally on a normal computer.
+men's international football matches:
 
-Probabilities come from trained models (Elo, Poisson goal model, multinomial
-logistic regression, gradient boosting) combined in a validation-selected
-ensemble — never from language-model intuition.
+* win / draw / win probabilities **after 90 minutes** (always sum to 1)
+* expected goals for both teams and exact-scoreline probabilities
+* both-teams-to-score, over/under 2.5, clean sheets, first scorer
+* for knockouts: advancement, extra-time, and penalty-shootout probabilities
+* a confidence label and the most influential features per match
+
+Probabilities come from trained models — a custom Elo, a Poisson goal model,
+multinomial logistic regression, and gradient boosting, blended by a
+validation-selected ensemble. Nothing is hand-tuned to look impressive, and
+results on past World Cups are reported honestly (they are humbling —
+football is random).
+
+**Free everything**: public datasets, open-source Python, no API keys, runs
+locally in a couple of minutes.
+
+---
+
+## Contents
+
+- [Quick start](#quick-start)
+- [What the commands do](#what-the-commands-do)
+- [Frozen vs rolling mode](#frozen-vs-rolling-mode)
+- [Rules of the road — read before you experiment](#rules-of-the-road--read-before-you-experiment)
+- [Understanding the output](#understanding-the-output)
+- [How it works](#how-it-works)
+- [Results](#results)
+- [Data sources](#data-sources)
+- [Project layout](#project-layout)
+- [Extending the model](#extending-the-model)
+- [Troubleshooting](#troubleshooting)
+- [Disclaimer](#disclaimer)
+
+---
 
 ## Quick start
 
-```bash
-pip install -r requirements.txt        # or: conda env create -f environment.yml
+Requires **Python 3.10+**.
 
-# 1. Download/refresh data (free public sources, cached under data/raw)
+```bash
+git clone <this-repo> && cd <this-repo>
+pip install -r requirements.txt         # or: conda env create -f environment.yml
+
+# 1) Download data (~4 MB from public GitHub repos, cached under data/raw)
 python update_data.py --include-world-cup-2026
 
-# 2. Train a model bundle (example: rolling 2026 cutoff)
+# 2) Train a model bundle (~2-4 minutes on a laptop)
 python train.py --cutoff "2026-07-11"
 
-# 3. Predict any two national teams
+# 3) Predict a match
 python predict.py --team-a "Argentina" --team-b "France" \
     --date "2026-07-15T20:00:00Z" --competition "FIFA World Cup" \
     --stage knockout --neutral --mode rolling
-
-# 4. Backtests
-python backtest.py --validate                                  # chronological folds
-python backtest.py --competition "FIFA World Cup" --year 2022 --mode both
-
-# 5. Tests
-python -m pytest tests/ -q
 ```
 
-## Data sources (all free, verified current at retrieval time)
+You get a console report plus a machine-readable JSON block. Run the tests
+any time with `python -m pytest tests/ -q` (34 tests, a few seconds).
 
-| Source | Coverage | Role | License/terms |
-|---|---|---|---|
-| [martj42/international_results](https://github.com/martj42/international_results) | 49k+ senior men's internationals, 1872 → present (incl. completed 2026 WC matches) | primary results | free public dataset (see repo) |
-| [openfootball/worldcup.json](https://github.com/openfootball/worldcup.json) | World Cups 2010–2026 with separate FT/ET/penalty scores and stage labels | 90-minute score corrections, stages, cross-verification | public domain (openfootball) |
-| martj42 `shootouts.csv` | all recorded shootouts | penalty identification | as above |
-| martj42 `former_names.csv` | country renames | team-name aliases | as above |
+## What the commands do
 
-Retrieval metadata (URL, timestamp, bytes) is stored beside every raw file
-and in `data/metadata/data_audit.json`. The 2026 results are cross-verified
-between the two independent sources at update time
-(`data/metadata/wc2026_verification.json`).
+### `update_data.py` — refresh the dataset
 
-**No API keys are needed.** `football-data.org` support can be added via
-`.env` later; the system is fully functional from the downloadable files.
-Betting odds are not used.
+```bash
+python update_data.py --include-world-cup-2026   # recommended form
+python update_data.py --offline                  # rebuild from cached raw files
+```
 
-## The canonical match table
+Downloads the raw sources, rebuilds the canonical match table
+(`data/processed/matches.csv`), prints a **freshness report** (latest match
+in the dataset, latest completed 2026 WC match, etc.), and — with
+`--include-world-cup-2026` — cross-verifies every completed 2026 result
+between two independent sources. Rebuilds are idempotent: re-running can
+never create duplicate matches.
 
-`data/processed/matches.csv` — one row per completed match with regulation
-(90-minute), extra-time, and penalty-shootout goals kept strictly separate
-(`goals_*_90`, `goals_*_extra_time`, `penalty_goals_*`), plus competition,
-stage (World Cups), neutrality, hosts, and provenance columns.
+Run this before predicting anything current. The source data is typically
+updated within a day of matches finishing.
 
-Extra-time policy (documented):
-* World Cup matches 2010–2026: regulation scores confirmed from openfootball
-  (`goals_90_confirmed = True`); ET-decided matches are corrected to their
-  true 90' draw.
-* Any shootout match (all competitions): the 90' result is a draw; the
-  recorded draw score may include ET goals (flagged `goals_90_confirmed=False`,
-  excluded from goal-model training).
-* Non-WC knockout matches decided in ET *without* a shootout cannot be
-  identified from the primary source and keep their post-ET score — a known
-  limitation affecting a small fraction of historical matches.
+### `train.py` — train a model bundle
 
-Team names use the primary source's current-name convention (Soviet Union →
-Russia, Zaïre → DR Congo, FR Yugoslavia → Serbia); genuinely distinct
-historical teams (Czechoslovakia, Yugoslavia, German DR) stay separate.
-Aliases (FIFA/openfootball spellings + former names) are documented in
-`src/data/team_names.py`.
+```bash
+python train.py --cutoff "2026-06-11"    # pre-tournament model (frozen 2026)
+python train.py --cutoff "2026-07-11"    # model trained on everything so far
+```
 
-## Leakage policy
+Trains all components on matches **strictly before** the cutoff, selects
+ensemble weights and calibration on a chronological validation window (also
+entirely before the cutoff), and saves a self-contained bundle to
+`models/bundle_<cutoff>.joblib` plus a copy at `models/bundle_latest.joblib`.
+Each bundle stores its models, weights, config snapshot, training cutoff,
+and package versions — same data + config reproduce the same predictions.
 
-For a match on day D, every feature uses only matches with date **strictly
-before D**. The dataset has no kickoff times, so this conservative whole-day
-rule guarantees same-day matches never affect each other. The feature
-builder processes matches in date groups: rows for day D are emitted before
-day D's results update any state. Automated tests
-(`tests/test_no_leakage.py`, `tests/test_tournament_order.py`) prove:
+### `predict.py` — predict any two national teams
 
-* full-pass features equal features computed from a dataset truncated at D;
-* same-day matches see identical prior state;
-* frozen mode never updates features from tournament matches;
-* training/validation/calibration splits are strictly chronological.
+```bash
+python predict.py --team-a "Spain" --team-b "England" \
+    --date "2026-07-14T20:00:00Z" \
+    --competition "FIFA World Cup" --stage knockout --neutral \
+    --mode rolling [--update-data] [--json-only] [--no-log]
+```
 
-## Features
-
-* **Elo** (custom): K by competition class (WC 60 … friendlies 20),
-  goal-margin multiplier, +100 home advantage (non-neutral only; hosts are
-  non-neutral in the data), inactivity shrinkage. Updated with 90' results
-  only. Parameters tuned exclusively on validation years ≤ 2013.
-* **Rolling form**: windows 5/10/20 (points, goals, clean sheets, failure to
-  score, win/draw rates), competitive-only windows, exponential day-decay
-  (half-life 550 days ≈ the spec's suggested weights), days since last
-  match, match-count depth.
-* **Context**: neutrality, home edge, competition class one-hots, knockout
-  stage flag.
-* Team A/B blocks plus difference features; 60 features total. Rankings and
-  advanced stats (xG, lineups) are optional extensions not required by the
-  core system.
-
-## Models
-
-| Component | What it is |
+| flag | meaning |
 |---|---|
-| `frequency` | historical class frequencies (baseline) |
-| `higher_elo` | empirical W/D/L given the higher-Elo side (baseline) |
-| `elo` | multinomial LR on the Elo expected score |
-| `poisson` | team-rows Poisson regression → λ_a, λ_b → exact-score matrix |
-| `logistic` | multinomial LR on all features (symmetrized) |
-| `gradient_boosting` | sklearn HistGradientBoosting (symmetrized; XGBoost/LightGBM optional, not required) |
-| **ensemble** | nonnegative weights summing to 1, grid-searched on a chronological validation window; multinomial recalibration kept only when it improves held-out log loss |
+| `--date` | kickoff, ISO date or timestamp (UTC) |
+| `--competition` | e.g. `"FIFA World Cup"`, `"Friendly"`, `"UEFA Nations League"` — sets match importance |
+| `--stage knockout` | enables advancement / extra-time / shootout outputs |
+| `--neutral` / `--home-team-a` | venue; neutral is the default |
+| `--mode` | `rolling` (default) or `frozen` — see below |
+| `--cutoff` | prediction cutoff if earlier than kickoff (features use matches strictly before this day) |
+| `--update-data` | refresh the dataset first |
+| `--json-only` | suppress the console report |
+| `--no-log` | don't append to the 2026 prediction log |
 
-Training splits for cutoff T: components fit on `< T−3y`; ensemble weights
-on `[T−3y, T−1y)` (val-A); calibration keep/drop decided on `[T−1y, T)`
-(val-B); components then refit on all `< T` with selections frozen. No
-selection ever touches data ≥ T; World Cup holdouts are never used to tune
-the model evaluated on them (all hyperparameters come from folds ≤ 2013).
+Team names follow the dataset's conventions (`United States`, `South Korea`,
+`Ivory Coast`, `Turkey`...). Common variants (`USA`, `Korea Republic`,
+`Côte d'Ivoire`, `Türkiye`) resolve automatically; anything unknown gets
+close-match suggestions instead of a wrong guess.
 
-## Modes
+### `backtest.py` — evaluate honestly
 
-* **Frozen**: features stop at the tournament start; measures pure
-  pre-tournament forecasting.
-* **Rolling**: completed tournament matches update Elo/form for later
-  predictions (model and weights stay locked). Saved predictions are
-  append-only and never revised after results are known
-  (`reports/predictions/world_cup_2026_predictions.csv`).
+```bash
+python backtest.py --validate                     # expanding-window folds 2014-2025
+python backtest.py --year 2022 --mode both        # frozen + rolling WC backtest
+```
 
-## Knockout handling
+Writes metric reports and per-match predictions under `reports/backtests/`
+and reliability/goal-diagnostic figures under `reports/figures/`.
 
-90-minute probabilities stay separate from advancement. Staged calculation:
-P(ET) = P(draw at 90'); ET goals ~ Poisson at per-minute rates recalibrated
-on historical WC ET matches; P(pens) = P(draw 90') × P(ET level); shootout
-≈ 50/50 with a small Elo tilt hard-clipped to [0.45, 0.55].
+## Frozen vs rolling mode
+
+* **Frozen** — features (Elo, form, rest days) stop at the tournament start.
+  Measures pure pre-tournament forecasting: "what did we know before a ball
+  was kicked?" Use `--mode frozen --model models/bundle_2026_frozen.joblib`.
+* **Rolling** — completed tournament matches update the *features* for later
+  match-days, but the model, hyperparameters, and ensemble weights stay
+  locked. This is the mode you want during the tournament.
+
+Both modes are backtested and reported separately — rolling is *not*
+automatically better (it won 2014/2018, lost 2022/2026-so-far; see
+[Results](#results)).
+
+## Rules of the road — read before you experiment
+
+These aren't style preferences; each one protects the statistical validity
+of the predictions.
+
+1. **Don't retrain during a tournament you're predicting.**
+   `train.py` reselects ensemble weights on recent data. Run mid-tournament,
+   that means weights chosen on tournament matches — a form of leakage, and
+   your frozen/rolling comparison becomes meaningless. Train once before the
+   tournament (or accept that your bundle is "locked" at whatever cutoff you
+   chose) and let **rolling mode** handle new results: features update from
+   the dataset at prediction time, no retraining needed.
+
+2. **Keep `models/bundle_2026_frozen.joblib`.** It's the only bundle whose
+   training provably predates the 2026 World Cup. If you overwrite it, you
+   can't make honest frozen-mode predictions anymore (you'd have to wait for
+   the next tournament).
+
+3. **Never edit `reports/predictions/world_cup_2026_predictions.csv`.**
+   It's append-only by design. A prediction log you can rewrite after
+   results are known is worthless.
+
+4. **Check the freshness report before trusting a prediction.** If
+   `latest_match_in_dataset` is older than the teams' last matches, run
+   `update_data.py` first. The CLI warns on stale data but won't stop you.
+
+5. **Dates are day-granular.** The dataset has no kickoff times, so a match
+   on day D uses only matches from day D−1 and earlier. Two matches on the
+   same day never inform each other. Predicting tonight's game means
+   "knowing" results only through yesterday.
+
+6. **If you tweak the model, validate chronologically** —
+   `python backtest.py --validate` — and keep a change only if it improves
+   held-out log loss / Brier / RPS. Random train/test splits on match data
+   will lie to you (future matches leak into training). And never tune on
+   the World Cup you plan to evaluate: hyperparameters here were tuned on
+   folds ≤ 2013 for exactly this reason.
+
+7. **Don't read too much into any single match or tournament.** 64–98
+   matches is a small sample; judge changes on the pooled metrics.
+
+## Understanding the output
+
+Console report plus JSON. Key JSON fields:
+
+```
+outcome_90            # P(team A win / draw / team B win) after 90 minutes — sums to 1
+expected_goals        # Poisson model's lambda for each team
+scorelines            # top exact scores with probabilities (consistent with outcome_90)
+additional_probabilities  # BTTS, over/under 2.5, clean sheets, first scorer
+knockout              # advancement, extra time, penalty shootout (knockout only)
+confidence            # label + 0-100 score from model agreement, entropy,
+                      # history depth, feature completeness (a documented
+                      # heuristic — high win probability != high confidence)
+important_features    # top-5 model-derived feature contributions
+component_probabilities  # each model's raw view, so you can see disagreement
+model_information     # training cutoff, feature cutoff, ensemble weights, versions
+```
+
+All "win/draw" probabilities refer to the score after 90 minutes plus
+stoppage time — extra time and shootouts are reported only in `knockout`.
+
+## How it works
+
+1. **Canonical dataset** — 49k+ internationals (1872→present) from public
+   sources, with regulation / extra-time / shootout goals kept strictly
+   separate. World Cup ET-decided matches are corrected to their true
+   90-minute draws using a second source with FT/ET/pens splits.
+2. **Chronological features** — custom Elo (competition-weighted K, goal
+   margin, home advantage, inactivity decay) + rolling form windows
+   (5/10/20 matches, competitive-only variants, exponential day-decay) +
+   match context. Built in a single time-ordered pass: features for day D
+   are emitted before day D's results update anything, so leakage is
+   structurally impossible (and tested: `tests/test_no_leakage.py`).
+3. **Models** — Elo-probability logistic, team-rows Poisson (→ exact-score
+   matrix), multinomial logistic regression, and sklearn
+   HistGradientBoosting, all symmetrized so team order doesn't matter.
+4. **Ensemble & calibration** — nonnegative weights summing to 1, grid-
+   searched on a pre-cutoff validation window; multinomial recalibration is
+   kept only if it improves a later held-out window (it currently doesn't,
+   so it's off).
+5. **Knockout layer** — P(extra time) = P(draw at 90'); ET goals at
+   historically-calibrated reduced rates; shootouts ≈ 50/50 with a small
+   Elo tilt clipped to [0.45, 0.55].
 
 ## Results
 
-See `reports/RESULTS.md` for the current validation and backtest tables
-(chronological folds 2014–2025, frozen/rolling World Cup backtests
-2014/2018/2022, and 2026 outputs), plus figures under `reports/figures/`.
+All numbers on chronologically unseen data. Full tables, per-match
+predictions, and figures: [reports/RESULTS.md](reports/RESULTS.md).
 
-## Reproducibility
+**Expanding-window folds 2014–2025** (train through Y−1, validate on Y, mean):
 
-Seeds fixed; every bundle (`models/*.joblib`) stores the trained components,
-ensemble weights, calibrator, config snapshot, feature version, training
-cutoff, latest match used, ET-model statistics, and package versions. Same
-data + config ⇒ same predictions (tested).
+| model | log loss | accuracy |
+|---|---|---|
+| logistic (full features) | **0.8825** | 59.2% |
+| gradient boosting | 0.8851 | 59.1% |
+| Elo only | 0.8974 | 59.1% |
+| Poisson only | 0.8991 | 58.7% |
+| higher-Elo baseline | 0.9555 | 59.1% |
+| class-frequency baseline | 1.0542 | 47.3% |
 
-## Limitations
+**World Cup backtests** (model trained strictly pre-tournament):
 
-See the Limitations section of `reports/RESULTS.md`.
+| World Cup | frozen log loss | rolling log loss | frozen accuracy |
+|---|---|---|---|
+| 2014 | 0.9996 | 0.9724 | 51.6% |
+| 2018 | 0.9881 | 0.9763 | 54.7% |
+| 2022 | 1.0599 | 1.0795 | 54.7% |
+| 2026 (98 matches so far) | 0.8897 | 0.9014 | 65.3% |
+
+Pooled frozen calibration across all four tournaments (290 matches,
+ECE 0.054):
+
+![Pooled reliability](reports/figures/wc_all_frozen_reliability.png)
+
+What drives predictions (out-of-sample permutation importance):
+
+![Feature importance](reports/figures/importance_gb_permutation.png)
+
+## Data sources
+
+This repo **does not redistribute data** — the pipeline downloads at runtime
+and caches locally (`data/` is gitignored). Sources, each under its own
+terms:
+
+| Source | Role |
+|---|---|
+| [martj42/international_results](https://github.com/martj42/international_results) | primary results, 1872→present, incl. 2026 WC |
+| [openfootball/worldcup.json](https://github.com/openfootball/worldcup.json) | FT/ET/pens splits + stages for World Cups 2010–2026; 2026 cross-verification |
+
+Retrieval metadata (URL, timestamp, size) is recorded next to every cached
+file and in `data/metadata/data_audit.json`. No betting odds are used
+anywhere.
+
+## Project layout
+
+```
+config/default.yaml     all tunable parameters (documented)
+update_data.py          download + canonical dataset + freshness report
+train.py                train a bundle through a cutoff
+predict.py              predict any fixture
+backtest.py             chronological validation + WC backtests
+src/data/               download, cleaning, team names, 2026 workflow
+src/features/           Elo, rolling form, chronological feature builder
+src/models/             baselines, Poisson, classifiers, ensemble, calibration
+src/evaluation/         metrics, backtests, tuning (dev-years only)
+src/prediction/         score matrix, knockout staging, match predictor
+tests/                  34 tests incl. leakage & extra-time guarantees
+reports/                results, backtests, figures, append-only prediction log
+notebooks/              thin display notebooks (logic lives in src/)
+```
+
+## Extending the model
+
+Ideas and where they go:
+
+* new features → `src/features/` (must be computable strictly pre-match;
+  wire into `FeatureBuilder.fixture_row`)
+* FIFA rankings → `src/features/rankings.py` (stub with the cutoff rule
+  documented)
+* Dixon-Coles low-score correction → `src/prediction/score_matrix.py`
+* new models → `src/models/`, add to `COMPONENT_NAMES` in `train_pipeline.py`
+
+The gate for *any* change: `python backtest.py --validate` must improve.
+See "Rules of the road" #6.
+
+## Troubleshooting
+
+* **`No trained model at models/bundle_latest.joblib`** — run `train.py`
+  (models are not committed; they're built locally in minutes).
+* **`Unknown team 'X'. Did you mean: ...`** — use a suggested name; the
+  dataset's naming conventions are listed above.
+* **Network errors** — the pipeline falls back to cached raw files with a
+  warning; `--offline` forces that. First-ever run needs internet once.
+* **Predictions look stale** — read the freshness report; run
+  `update_data.py`.
+* **Different sklearn version warnings when loading a bundle** — retrain
+  rather than trusting a bundle across major sklearn versions.
+
+## Disclaimer
+
+This is a statistics hobby project for educational use. Probabilities are
+model estimates with real uncertainty — football is genuinely random (the
+best public models top out around 55–60% accuracy on World Cup matches).
+**Not betting advice; don't wager money based on this.**
+
+## License
+
+MIT (see [LICENSE](LICENSE)). Downloaded data remains under its sources'
+own terms.
