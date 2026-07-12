@@ -71,9 +71,24 @@ def load_openfootball_wc(path: Path, resolve) -> pd.DataFrame:
                 "of_went_pens": pen is not None,
                 "stage": "Group" if m.get("group") else m.get("round", ""),
                 "group": (m.get("group") or "").replace("Group ", ""),
+                "of_venue": m.get("ground", ""),
             }
         )
     return pd.DataFrame(rows)
+
+
+# Hosts per World Cup edition, used only for rows appended from openfootball
+# when the primary source lags behind (see build_canonical). Limitation: a
+# co-host playing inside another host's country would be mislabelled
+# non-neutral; no such appended row can occur for 2026 (all three hosts were
+# eliminated before the primary source started lagging).
+WC_HOSTS = {
+    2010: {"South Africa"},
+    2014: {"Brazil"},
+    2018: {"Russia"},
+    2022: {"Qatar"},
+    2026: {"United States", "Mexico", "Canada"},
+}
 
 
 def build_canonical(raw_paths: dict[str, Path], retrieved_at: str) -> tuple[pd.DataFrame, dict]:
@@ -132,6 +147,7 @@ def build_canonical(raw_paths: dict[str, Path], retrieved_at: str) -> tuple[pd.D
             of_frames.append(load_openfootball_wc(path, resolve))
     n_corrected = 0
     unmatched_of = []
+    extra_rows = []
     if of_frames:
         of = pd.concat(of_frames, ignore_index=True)
         idx = {}
@@ -141,7 +157,38 @@ def build_canonical(raw_paths: dict[str, Path], retrieved_at: str) -> tuple[pd.D
         for _, r in of.iterrows():
             j = idx.get((r["date"], r["team_a"], r["team_b"]))
             if j is None:
+                # Completed WC match the primary source does not have yet
+                # (martj42 typically lags openfootball by a day or two during
+                # a tournament). Append it as a full row so rolling-mode
+                # features stay current; once the primary catches up the
+                # match keys collide and this branch no longer fires, so a
+                # refresh can never duplicate it.
                 unmatched_of.append(f"{r['date'].date()} {r['team_a']} v {r['team_b']}")
+                hosts = WC_HOSTS.get(r["date"].year, set())
+                host = next((t for t in (r["team_a"], r["team_b"]) if t in hosts), None)
+                extra_rows.append(
+                    {
+                        "date": r["date"],
+                        "team_a": r["team_a"],
+                        "team_b": r["team_b"],
+                        "goals_a_90": int(r["of_ft_a"]),
+                        "goals_b_90": int(r["of_ft_b"]),
+                        "competition": "FIFA World Cup",
+                        "venue": r["of_venue"],
+                        "host_country": host or "",
+                        "neutral": host is None,
+                        "stage": r["stage"],
+                        "group": r["group"],
+                        "goals_a_extra_time": int(r["of_et_a"]),
+                        "goals_b_extra_time": int(r["of_et_b"]),
+                        "penalty_goals_a": r["of_pen_a"],
+                        "penalty_goals_b": r["of_pen_b"],
+                        "went_to_extra_time": bool(r["of_went_et"]),
+                        "went_to_penalties": bool(r["of_went_pens"]),
+                        "goals_90_confirmed": True,
+                        "_of_only": True,
+                    }
+                )
                 continue
             swapped = df.at[j, "team_a"] != r["team_a"]
             sfx = ("_b", "_a") if swapped else ("_a", "_b")
@@ -163,6 +210,14 @@ def build_canonical(raw_paths: dict[str, Path], retrieved_at: str) -> tuple[pd.D
     # play one (Copa América historically often went straight to penalties;
     # we therefore do NOT force went_to_extra_time for non-WC shootouts).
 
+    if extra_rows:
+        df = pd.concat([df, pd.DataFrame(extra_rows)], ignore_index=True)
+        log.info(
+            "appended %d completed WC match(es) missing from primary: %s",
+            len(extra_rows),
+            unmatched_of,
+        )
+
     # --- derived fields ---------------------------------------------------
     df["winner_90"] = np.select(
         [df["goals_a_90"] > df["goals_b_90"], df["goals_a_90"] < df["goals_b_90"]],
@@ -173,6 +228,10 @@ def build_canonical(raw_paths: dict[str, Path], retrieved_at: str) -> tuple[pd.D
     df["host_team_b"] = (~df["neutral"]) & (df["team_b"] == df["host_country"])
     df["match_status"] = "completed"
     df["source"] = "martj42_international_results+openfootball_wc"
+    if "_of_only" in df.columns:
+        of_only = df["_of_only"].fillna(False).astype(bool)
+        df.loc[of_only, "source"] = "openfootball_wc_only"
+        df = df.drop(columns="_of_only")
     df["retrieved_at"] = retrieved_at
 
     df = df.sort_values(["date", "team_a", "team_b"], kind="mergesort").reset_index(drop=True)
@@ -199,6 +258,7 @@ def build_canonical(raw_paths: dict[str, Path], retrieved_at: str) -> tuple[pd.D
         "n_wc_et_corrections": n_corrected,
         "n_unconfirmed_90min_scores": int((~df["goals_90_confirmed"]).sum()),
         "openfootball_rows_unmatched_in_primary": unmatched_of,
+        "n_appended_from_openfootball": len(extra_rows),
         "n_scheduled_fixtures_excluded": int(len(fixtures)),
         "missing_rate": {
             c: float(df[c].isna().mean()) for c in df.columns if df[c].isna().any()

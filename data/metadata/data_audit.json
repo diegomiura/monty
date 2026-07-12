@@ -1,25 +1,29 @@
 {
-  "n_matches": 49503,
+  "n_matches": 49505,
   "n_teams": 336,
   "first_date": "1872-11-30",
-  "last_date": "2026-07-10",
+  "last_date": "2026-07-11",
   "n_shootouts_flagged": 681,
   "n_wc_et_corrections": 28,
   "n_unconfirmed_90min_scores": 662,
-  "openfootball_rows_unmatched_in_primary": [],
+  "openfootball_rows_unmatched_in_primary": [
+    "2026-07-11 Norway v England",
+    "2026-07-11 Argentina v Switzerland"
+  ],
+  "n_appended_from_openfootball": 2,
   "n_scheduled_fixtures_excluded": 2,
   "missing_rate": {
-    "penalty_goals_a": 0.9996161848776842,
-    "penalty_goals_b": 0.9996161848776842
+    "penalty_goals_a": 0.9996162003837996,
+    "penalty_goals_b": 0.9996162003837996
   },
-  "retrieved_at": "2026-07-12T01:40:03Z",
-  "n_matches_added_vs_previous_build": 0,
+  "retrieved_at": "2026-07-12T20:52:50Z",
+  "n_matches_added_vs_previous_build": 2,
   "sources": [
     {
       "source": "results",
       "path": "data/raw/results.csv",
       "url": "https://raw.githubusercontent.com/martj42/international_results/master/results.csv",
-      "retrieved_at": "2026-07-11T20:47:06Z",
+      "retrieved_at": "2026-07-12T20:49:18Z",
       "bytes": 3726382,
       "license": "See https://github.com/martj42/international_results (free public dataset)"
     },
@@ -27,7 +31,7 @@
       "source": "shootouts",
       "path": "data/raw/shootouts.csv",
       "url": "https://raw.githubusercontent.com/martj42/international_results/master/shootouts.csv",
-      "retrieved_at": "2026-07-11T20:47:06Z",
+      "retrieved_at": "2026-07-12T20:49:18Z",
       "bytes": 29001,
       "license": "See https://github.com/martj42/international_results (free public dataset)"
     },
@@ -35,7 +39,7 @@
       "source": "former_names",
       "path": "data/raw/former_names.csv",
       "url": "https://raw.githubusercontent.com/martj42/international_results/master/former_names.csv",
-      "retrieved_at": "2026-07-11T20:47:06Z",
+      "retrieved_at": "2026-07-12T20:49:18Z",
       "bytes": 1691,
       "license": "See https://github.com/martj42/international_results (free public dataset)"
     },
@@ -43,7 +47,7 @@
       "source": "worldcup_2010",
       "path": "data/raw/worldcup_2010.json",
       "url": "https://raw.githubusercontent.com/openfootball/worldcup.json/master/2010/worldcup.json",
-      "retrieved_at": "2026-07-11T20:47:06Z",
+      "retrieved_at": "2026-07-12T20:49:18Z",
       "bytes": 14787,
       "license": "CC0/public-domain-style community data; verify at source repo"
     },
@@ -51,7 +55,7 @@
       "source": "worldcup_2014",
       "path": "data/raw/worldcup_2014.json",
       "url": "https://raw.githubusercontent.com/openfootball/worldcup.json/master/2014/worldcup.json",
-      "retrieved_at": "2026-07-11T20:47:06Z",
+      "retrieved_at": "2026-07-12T20:49:18Z",
       "bytes": 25864,
       "license": "CC0/public-domain-style community data; verify at source repo"
     },
@@ -59,7 +63,7 @@
       "source": "worldcup_2018",
       "path": "data/raw/worldcup_2018.json",
       "url": "https://raw.githubusercontent.com/openfootball/worldcup.json/master/2018/worldcup.json",
-      "retrieved_at": "2026-07-11T20:47:06Z",
+      "retrieved_at": "2026-07-12T20:49:18Z",
       "bytes": 25988,
       "license": "CC0/public-domain-style community data; verify at source repo"
     },
@@ -67,7 +71,7 @@
       "source": "worldcup_2022",
       "path": "data/raw/worldcup_2022.json",
       "url": "https://raw.githubusercontent.com/openfootball/worldcup.json/master/2022/worldcup.json",
-      "retrieved_at": "2026-07-11T20:47:07Z",
+      "retrieved_at": "2026-07-12T20:49:19Z",
       "bytes": 26072,
       "license": "CC0/public-domain-style community data; verify at source repo"
     },
@@ -75,8 +79,8 @@
       "source": "worldcup_2026",
       "path": "data/raw/worldcup_2026.json",
       "url": "https://raw.githubusercontent.com/openfootball/worldcup.json/master/2026/worldcup.json",
-      "retrieved_at": "2026-07-11T20:47:07Z",
-      "bytes": 41046,
+      "retrieved_at": "2026-07-12T20:49:19Z",
+      "bytes": 41589,
       "license": "CC0/public-domain-style community data; verify at source repo"
     }
   ]
