@@ -19,8 +19,11 @@ def test_baseline_probs_sum_to_one(cfg, toy_matches):
         assert (p >= 0).all()
 
 
-def test_outcome_models_sum_to_one(cfg, toy_matches):
-    feats = _feats(cfg, toy_matches)
+def test_outcome_models_sum_to_one(cfg, rich_matches):
+    # rich_matches, not toy_matches: HistGradientBoosting (sklearn >= 1.9
+    # with numpy >= 2.x) cannot fit columns that are entirely NaN, which the
+    # sparse toy fixture produces for the long rolling-form windows.
+    feats = _feats(cfg, rich_matches)
     y = feats["outcome"].to_numpy()
     for maker in (make_logistic, make_gradient_boosting):
         m = maker(cfg).fit(feats, y)
