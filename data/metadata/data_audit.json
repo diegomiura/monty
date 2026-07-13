@@ -16,14 +16,14 @@
     "penalty_goals_a": 0.9996162003837996,
     "penalty_goals_b": 0.9996162003837996
   },
-  "retrieved_at": "2026-07-12T20:52:50Z",
-  "n_matches_added_vs_previous_build": 2,
+  "retrieved_at": "2026-07-13T08:46:07Z",
+  "n_matches_added_vs_previous_build": 49505,
   "sources": [
     {
       "source": "results",
       "path": "data/raw/results.csv",
       "url": "https://raw.githubusercontent.com/martj42/international_results/master/results.csv",
-      "retrieved_at": "2026-07-12T20:49:18Z",
+      "retrieved_at": "2026-07-13T08:46:06Z",
       "bytes": 3726382,
       "license": "See https://github.com/martj42/international_results (free public dataset)"
     },
@@ -31,7 +31,7 @@
       "source": "shootouts",
       "path": "data/raw/shootouts.csv",
       "url": "https://raw.githubusercontent.com/martj42/international_results/master/shootouts.csv",
-      "retrieved_at": "2026-07-12T20:49:18Z",
+      "retrieved_at": "2026-07-13T08:46:07Z",
       "bytes": 29001,
       "license": "See https://github.com/martj42/international_results (free public dataset)"
     },
@@ -39,7 +39,7 @@
       "source": "former_names",
       "path": "data/raw/former_names.csv",
       "url": "https://raw.githubusercontent.com/martj42/international_results/master/former_names.csv",
-      "retrieved_at": "2026-07-12T20:49:18Z",
+      "retrieved_at": "2026-07-13T08:46:07Z",
       "bytes": 1691,
       "license": "See https://github.com/martj42/international_results (free public dataset)"
     },
@@ -47,7 +47,7 @@
       "source": "worldcup_2010",
       "path": "data/raw/worldcup_2010.json",
       "url": "https://raw.githubusercontent.com/openfootball/worldcup.json/master/2010/worldcup.json",
-      "retrieved_at": "2026-07-12T20:49:18Z",
+      "retrieved_at": "2026-07-13T08:46:07Z",
       "bytes": 14787,
       "license": "CC0/public-domain-style community data; verify at source repo"
     },
@@ -55,7 +55,7 @@
       "source": "worldcup_2014",
       "path": "data/raw/worldcup_2014.json",
       "url": "https://raw.githubusercontent.com/openfootball/worldcup.json/master/2014/worldcup.json",
-      "retrieved_at": "2026-07-12T20:49:18Z",
+      "retrieved_at": "2026-07-13T08:46:07Z",
       "bytes": 25864,
       "license": "CC0/public-domain-style community data; verify at source repo"
     },
@@ -63,7 +63,7 @@
       "source": "worldcup_2018",
       "path": "data/raw/worldcup_2018.json",
       "url": "https://raw.githubusercontent.com/openfootball/worldcup.json/master/2018/worldcup.json",
-      "retrieved_at": "2026-07-12T20:49:18Z",
+      "retrieved_at": "2026-07-13T08:46:07Z",
       "bytes": 25988,
       "license": "CC0/public-domain-style community data; verify at source repo"
     },
@@ -71,7 +71,7 @@
       "source": "worldcup_2022",
       "path": "data/raw/worldcup_2022.json",
       "url": "https://raw.githubusercontent.com/openfootball/worldcup.json/master/2022/worldcup.json",
-      "retrieved_at": "2026-07-12T20:49:19Z",
+      "retrieved_at": "2026-07-13T08:46:07Z",
       "bytes": 26072,
       "license": "CC0/public-domain-style community data; verify at source repo"
     },
@@ -79,7 +79,7 @@
       "source": "worldcup_2026",
       "path": "data/raw/worldcup_2026.json",
       "url": "https://raw.githubusercontent.com/openfootball/worldcup.json/master/2026/worldcup.json",
-      "retrieved_at": "2026-07-12T20:49:19Z",
+      "retrieved_at": "2026-07-13T08:46:07Z",
       "bytes": 41589,
       "license": "CC0/public-domain-style community data; verify at source repo"
     }
