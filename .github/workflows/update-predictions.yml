@@ -1,11 +1,16 @@
-# Refresh the README's next-round prediction section on a schedule.
+# Refresh the README's next-round predictions and track record on a schedule.
 #
 # Flow: download latest results -> reproduce the locked model bundle
 # (training cutoff is PINNED; seeds are fixed and pre-cutoff data is
 # stable, so every run yields the same model — retraining here is a
 # build step, not a retune, in line with the tournament-lock rule) ->
-# render predictions into README.md -> commit only when the predictions
-# actually changed (update_readme.py skips timestamp-only rewrites).
+# render predictions into README.md -> grade any logged prediction whose
+# match has now finished -> commit only when something actually changed
+# (both scripts skip timestamp-only rewrites).
+#
+# Grading only ever fills the evaluation columns of the append-only
+# prediction log; update_track_record.py refuses to write if a prediction
+# column would change.
 #
 # TRAIN_CUTOFF must be bumped manually if a new bundle is ever locked
 # for a future tournament.
@@ -55,14 +60,17 @@ jobs:
       - name: Render next-round predictions into README
         run: python update_readme.py
 
+      - name: Grade finished predictions into the README track record
+        run: python update_track_record.py
+
       - name: Commit refreshed README when predictions changed
         run: |
-          if git diff --quiet -- README.md; then
-            echo "Predictions unchanged; nothing to commit."
+          if git diff --quiet -- README.md reports/predictions; then
+            echo "Predictions and track record unchanged; nothing to commit."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add README.md data/metadata
-          git commit -m "Auto-update README predictions (scheduled)"
+          git add README.md data/metadata reports/predictions
+          git commit -m "Auto-update README predictions and track record (scheduled)"
           git push origin HEAD:main

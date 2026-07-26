@@ -47,15 +47,31 @@ def main() -> int:
         refresh_dataset(cfg)
     matches = load_matches(cfg)
 
+    readme_path = Path(args.readme) if args.readme else resolve("README.md")
+
     fixtures = load_upcoming(cfg)
     if not fixtures:
+        # Either the round is mid-play or the tournament is over. Either way
+        # the previous round's predictions are now stale, so clear them to a
+        # placeholder rather than leaving finished matches billed as upcoming.
         print(
-            "error: no unplayed fixtures with both teams decided in "
-            "data/raw/worldcup_2026.json — run 'python update_data.py "
-            "--include-world-cup-2026' after the current round finishes.",
+            "no unplayed fixtures with both teams decided in "
+            "data/raw/worldcup_2026.json — clearing the section. Run "
+            "'python update_data.py --include-world-cup-2026' once the next "
+            "round is drawn.",
             file=sys.stderr,
         )
-        return 2
+        section = render_section([], args.mode)
+        if args.dry_run:
+            print(section)
+            return 0
+        text = readme_path.read_text()
+        if not args.force and section_equivalent(current_section(text), current_section(section)):
+            print("README section already current; not rewriting.")
+            return 0
+        readme_path.write_text(splice_readme(text, section))
+        print("README updated: no upcoming fixtures; section cleared.")
+        return 0
 
     model_path = Path(args.model) if args.model else resolve("models") / "bundle_latest.joblib"
     if not model_path.exists():
@@ -75,13 +91,12 @@ def main() -> int:
         print(section)
         return 0
 
-    readme = Path(args.readme) if args.readme else resolve("README.md")
-    text = readme.read_text()
+    text = readme_path.read_text()
     if not args.force and section_equivalent(current_section(text), current_section(section)):
         print("README section already current (only the timestamp would change); "
               "not rewriting. Use --force to rewrite anyway.")
         return 0
-    readme.write_text(splice_readme(text, section))
+    readme_path.write_text(splice_readme(text, section))
     names = ", ".join(f"{p['team_a']} v {p['team_b']}" for p in preds)
     print(f"README updated: {len(preds)} fixture(s) ({names}), mode={args.mode}")
     return 0
