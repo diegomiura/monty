@@ -137,41 +137,59 @@ def grade(log: pd.DataFrame, matches: pd.DataFrame) -> pd.DataFrame:
     Rows whose fixture was never played (e.g. a speculative final that the
     bracket did not produce) stay ungraded with ``graded=False`` rather than
     being force-matched to some other match.
+
+    Evaluation columns are built as whole columns with explicit dtypes rather
+    than written cell-by-cell: an unpopulated log reads back with those
+    columns typed as ``float64`` (all-NaN) or ``str`` (all-empty), and pandas
+    >= 3 raises rather than silently widening the dtype on assignment.
     """
     out = log.copy()
-    for col in EVALUATION_COLUMNS:
-        if col not in out.columns:
-            out[col] = np.nan
-    out["graded"] = False
-    out["went_to_extra_time"] = False
-    out["went_to_penalties"] = False
-    out["actual_stage"] = ""
+    cols: dict[str, list] = {c: [] for c in EVALUATION_COLUMNS}
+    graded_flags, et_flags, pen_flags, stages = [], [], [], []
 
-    for i, row in out.iterrows():
+    for _, row in out.iterrows():
         res = find_result(row["match"], row["kickoff"], matches)
         if res is None:
+            for c in EVALUATION_COLUMNS:
+                cols[c].append(np.nan)
+            graded_flags.append(False)
+            et_flags.append(False)
+            pen_flags.append(False)
+            stages.append("")
             continue
+
         p = np.array([float(row[c]) for c in PROB_COLUMNS], dtype=float)
         y = _outcome_index(res["goals_a"], res["goals_b"])
         onehot = np.zeros(3)
         onehot[y] = 1.0
         actual_score = f"{res['goals_a']}-{res['goals_b']}"
 
-        out.at[i, "actual_score"] = actual_score
-        out.at[i, "actual_result"] = OUTCOMES[y]
-        out.at[i, "brier_score"] = round(float(np.sum((p - onehot) ** 2)), 6)
-        out.at[i, "log_loss"] = round(float(-np.log(max(p[y], EPS))), 6)
-        out.at[i, "goal_absolute_error"] = round(
-            abs(float(row["expected_goals_a"]) - res["goals_a"])
-            + abs(float(row["expected_goals_b"]) - res["goals_b"]),
-            6,
+        cols["actual_score"].append(actual_score)
+        cols["actual_result"].append(OUTCOMES[y])
+        cols["brier_score"].append(round(float(np.sum((p - onehot) ** 2)), 6))
+        cols["log_loss"].append(round(float(-np.log(max(p[y], EPS))), 6))
+        cols["goal_absolute_error"].append(
+            round(
+                abs(float(row["expected_goals_a"]) - res["goals_a"])
+                + abs(float(row["expected_goals_b"]) - res["goals_b"]),
+                6,
+            )
         )
-        out.at[i, "correct_result"] = bool(int(np.argmax(p)) == y)
-        out.at[i, "correct_exact_score"] = bool(str(row["predicted_score"]) == actual_score)
-        out.at[i, "graded"] = True
-        out.at[i, "went_to_extra_time"] = res["went_to_extra_time"]
-        out.at[i, "went_to_penalties"] = res["went_to_penalties"]
-        out.at[i, "actual_stage"] = res["stage"]
+        cols["correct_result"].append(bool(int(np.argmax(p)) == y))
+        cols["correct_exact_score"].append(bool(str(row["predicted_score"]) == actual_score))
+        graded_flags.append(True)
+        et_flags.append(res["went_to_extra_time"])
+        pen_flags.append(res["went_to_penalties"])
+        stages.append(res["stage"])
+
+    for c in ("actual_score", "actual_result", "correct_result", "correct_exact_score"):
+        out[c] = pd.Series(cols[c], index=out.index, dtype=object)
+    for c in ("brier_score", "log_loss", "goal_absolute_error"):
+        out[c] = pd.Series(cols[c], index=out.index, dtype=float)
+    out["graded"] = pd.Series(graded_flags, index=out.index, dtype=bool)
+    out["went_to_extra_time"] = pd.Series(et_flags, index=out.index, dtype=bool)
+    out["went_to_penalties"] = pd.Series(pen_flags, index=out.index, dtype=bool)
+    out["actual_stage"] = pd.Series(stages, index=out.index, dtype=object)
     return out
 
 
