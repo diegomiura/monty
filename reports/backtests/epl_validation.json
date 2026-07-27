@@ -1,0 +1,393 @@
+{
+  "devig_method": "shin",
+  "benchmark_source": "pinnacle",
+  "n_matches_scored": 9880,
+  "n_matches_priced": 5150,
+  "all_matches": [
+    {
+      "model": "logistic",
+      "n": 9880,
+      "log_loss": 0.9788,
+      "brier": 0.5824,
+      "rps": 0.1986,
+      "accuracy": 0.5284,
+      "balanced_accuracy": 0.4452,
+      "top_two_accuracy": 0.787,
+      "ece": 0.0194
+    },
+    {
+      "model": "elo",
+      "n": 9880,
+      "log_loss": 0.9845,
+      "brier": 0.5863,
+      "rps": 0.2005,
+      "accuracy": 0.5279,
+      "balanced_accuracy": 0.4425,
+      "top_two_accuracy": 0.7847,
+      "ece": 0.0163
+    },
+    {
+      "model": "higher_elo",
+      "n": 9880,
+      "log_loss": 1.0188,
+      "brier": 0.6101,
+      "rps": 0.2116,
+      "accuracy": 0.525,
+      "balanced_accuracy": 0.4482,
+      "top_two_accuracy": 0.777,
+      "ece": 0.0314
+    },
+    {
+      "model": "gradient_boosting",
+      "n": 9880,
+      "log_loss": 1.0267,
+      "brier": 0.6059,
+      "rps": 0.2066,
+      "accuracy": 0.5138,
+      "balanced_accuracy": 0.4407,
+      "top_two_accuracy": 0.7733,
+      "ece": 0.0552
+    },
+    {
+      "model": "frequency",
+      "n": 9880,
+      "log_loss": 1.0651,
+      "brier": 0.6434,
+      "rps": 0.2283,
+      "accuracy": 0.4567,
+      "balanced_accuracy": 0.3333,
+      "top_two_accuracy": 0.7438,
+      "ece": 0.0038
+    }
+  ],
+  "priced_subset": [
+    {
+      "model": "market",
+      "n": 5150,
+      "log_loss": 0.9522,
+      "brier": 0.5632,
+      "rps": 0.1929,
+      "accuracy": 0.5522,
+      "balanced_accuracy": 0.4695,
+      "top_two_accuracy": 0.7944,
+      "ece": 0.0103
+    },
+    {
+      "model": "logistic",
+      "n": 5150,
+      "log_loss": 0.9704,
+      "brier": 0.5755,
+      "rps": 0.1984,
+      "accuracy": 0.5388,
+      "balanced_accuracy": 0.4528,
+      "top_two_accuracy": 0.7932,
+      "ece": 0.0224
+    },
+    {
+      "model": "gradient_boosting",
+      "n": 5150,
+      "log_loss": 0.9786,
+      "brier": 0.5803,
+      "rps": 0.2002,
+      "accuracy": 0.5305,
+      "balanced_accuracy": 0.4511,
+      "top_two_accuracy": 0.7761,
+      "ece": 0.0198
+    },
+    {
+      "model": "elo",
+      "n": 5150,
+      "log_loss": 0.9787,
+      "brier": 0.5813,
+      "rps": 0.2009,
+      "accuracy": 0.5402,
+      "balanced_accuracy": 0.4538,
+      "top_two_accuracy": 0.7864,
+      "ece": 0.0218
+    },
+    {
+      "model": "higher_elo",
+      "n": 5150,
+      "log_loss": 1.0135,
+      "brier": 0.606,
+      "rps": 0.2123,
+      "accuracy": 0.5386,
+      "balanced_accuracy": 0.4574,
+      "top_two_accuracy": 0.7777,
+      "ece": 0.0352
+    },
+    {
+      "model": "frequency",
+      "n": 5150,
+      "log_loss": 1.069,
+      "brier": 0.6464,
+      "rps": 0.2325,
+      "accuracy": 0.4472,
+      "balanced_accuracy": 0.3333,
+      "top_two_accuracy": 0.7631,
+      "ece": 0.0138
+    }
+  ],
+  "folds": [
+    {
+      "season": "2000-01",
+      "n_train": 2824,
+      "n_test": 380,
+      "frequency": 1.0516,
+      "higher_elo": 1.0348,
+      "elo": 1.0102,
+      "logistic": 1.0193,
+      "gradient_boosting": 1.1687
+    },
+    {
+      "season": "2001-02",
+      "n_train": 3204,
+      "n_test": 380,
+      "frequency": 1.0793,
+      "higher_elo": 1.0437,
+      "elo": 1.0153,
+      "logistic": 1.0191,
+      "gradient_boosting": 1.2533
+    },
+    {
+      "season": "2002-03",
+      "n_train": 3584,
+      "n_test": 380,
+      "frequency": 1.0486,
+      "higher_elo": 1.0215,
+      "elo": 0.9899,
+      "logistic": 0.9983,
+      "gradient_boosting": 1.2287
+    },
+    {
+      "season": "2003-04",
+      "n_train": 3964,
+      "n_test": 380,
+      "frequency": 1.0751,
+      "higher_elo": 1.0568,
+      "elo": 1.0237,
+      "logistic": 1.0252,
+      "gradient_boosting": 1.2346
+    },
+    {
+      "season": "2004-05",
+      "n_train": 4344,
+      "n_test": 380,
+      "frequency": 1.0663,
+      "higher_elo": 1.0312,
+      "elo": 0.995,
+      "logistic": 0.982,
+      "gradient_boosting": 1.1471
+    },
+    {
+      "season": "2005-06",
+      "n_train": 4724,
+      "n_test": 380,
+      "frequency": 1.0423,
+      "higher_elo": 0.9968,
+      "elo": 0.9537,
+      "logistic": 0.9497,
+      "gradient_boosting": 1.0454
+    },
+    {
+      "season": "2006-07",
+      "n_train": 5104,
+      "n_test": 380,
+      "frequency": 1.0541,
+      "higher_elo": 1.0275,
+      "elo": 0.9926,
+      "logistic": 0.9769,
+      "gradient_boosting": 0.9824
+    },
+    {
+      "season": "2007-08",
+      "n_train": 5484,
+      "n_test": 380,
+      "frequency": 1.0626,
+      "higher_elo": 0.9838,
+      "elo": 0.9409,
+      "logistic": 0.9266,
+      "gradient_boosting": 0.9303
+    },
+    {
+      "season": "2008-09",
+      "n_train": 5864,
+      "n_test": 380,
+      "frequency": 1.0669,
+      "higher_elo": 1.0105,
+      "elo": 0.9625,
+      "logistic": 0.9557,
+      "gradient_boosting": 0.9606
+    },
+    {
+      "season": "2009-10",
+      "n_train": 6244,
+      "n_test": 380,
+      "frequency": 1.0384,
+      "higher_elo": 0.9887,
+      "elo": 0.9452,
+      "logistic": 0.944,
+      "gradient_boosting": 0.9658
+    },
+    {
+      "season": "2010-11",
+      "n_train": 6624,
+      "n_test": 380,
+      "frequency": 1.0582,
+      "higher_elo": 1.0365,
+      "elo": 1.0256,
+      "logistic": 1.0237,
+      "gradient_boosting": 1.0316
+    },
+    {
+      "season": "2011-12",
+      "n_train": 7004,
+      "n_test": 380,
+      "frequency": 1.0701,
+      "higher_elo": 1.034,
+      "elo": 0.9993,
+      "logistic": 1.0013,
+      "gradient_boosting": 1.0077
+    },
+    {
+      "season": "2012-13",
+      "n_train": 7384,
+      "n_test": 380,
+      "frequency": 1.077,
+      "higher_elo": 1.0322,
+      "elo": 0.9894,
+      "logistic": 0.9686,
+      "gradient_boosting": 0.9844
+    },
+    {
+      "season": "2013-14",
+      "n_train": 7764,
+      "n_test": 380,
+      "frequency": 1.0582,
+      "higher_elo": 0.9828,
+      "elo": 0.9499,
+      "logistic": 0.941,
+      "gradient_boosting": 0.9351
+    },
+    {
+      "season": "2014-15",
+      "n_train": 8144,
+      "n_test": 380,
+      "frequency": 1.0677,
+      "higher_elo": 1.0225,
+      "elo": 0.9971,
+      "logistic": 0.9958,
+      "gradient_boosting": 1.0114
+    },
+    {
+      "season": "2015-16",
+      "n_train": 8524,
+      "n_test": 380,
+      "frequency": 1.0894,
+      "higher_elo": 1.0592,
+      "elo": 1.0332,
+      "logistic": 1.0434,
+      "gradient_boosting": 1.0483
+    },
+    {
+      "season": "2016-17",
+      "n_train": 8904,
+      "n_test": 380,
+      "frequency": 1.0461,
+      "higher_elo": 0.976,
+      "elo": 0.9428,
+      "logistic": 0.9301,
+      "gradient_boosting": 0.9494
+    },
+    {
+      "season": "2017-18",
+      "n_train": 9284,
+      "n_test": 380,
+      "frequency": 1.0664,
+      "higher_elo": 1.013,
+      "elo": 0.9644,
+      "logistic": 0.9622,
+      "gradient_boosting": 0.9561
+    },
+    {
+      "season": "2018-19",
+      "n_train": 9664,
+      "n_test": 380,
+      "frequency": 1.0524,
+      "higher_elo": 0.9912,
+      "elo": 0.9287,
+      "logistic": 0.9046,
+      "gradient_boosting": 0.9136
+    },
+    {
+      "season": "2019-20",
+      "n_train": 10044,
+      "n_test": 380,
+      "frequency": 1.0665,
+      "higher_elo": 1.0248,
+      "elo": 0.9858,
+      "logistic": 0.9825,
+      "gradient_boosting": 0.9862
+    },
+    {
+      "season": "2020-21",
+      "n_train": 10424,
+      "n_test": 380,
+      "frequency": 1.1021,
+      "higher_elo": 1.0564,
+      "elo": 1.0464,
+      "logistic": 1.0355,
+      "gradient_boosting": 1.0272
+    },
+    {
+      "season": "2021-22",
+      "n_train": 10804,
+      "n_test": 380,
+      "frequency": 1.0764,
+      "higher_elo": 1.0078,
+      "elo": 0.9723,
+      "logistic": 0.9545,
+      "gradient_boosting": 0.9879
+    },
+    {
+      "season": "2022-23",
+      "n_train": 11184,
+      "n_test": 380,
+      "frequency": 1.0493,
+      "higher_elo": 1.0045,
+      "elo": 0.968,
+      "logistic": 0.9701,
+      "gradient_boosting": 0.97
+    },
+    {
+      "season": "2023-24",
+      "n_train": 11564,
+      "n_test": 380,
+      "frequency": 1.0591,
+      "higher_elo": 0.9789,
+      "elo": 0.9406,
+      "logistic": 0.9169,
+      "gradient_boosting": 0.9349
+    },
+    {
+      "season": "2024-25",
+      "n_train": 11944,
+      "n_test": 380,
+      "frequency": 1.0869,
+      "higher_elo": 1.025,
+      "elo": 0.9932,
+      "logistic": 0.9905,
+      "gradient_boosting": 1.003
+    },
+    {
+      "season": "2025-26",
+      "n_train": 12324,
+      "n_test": 380,
+      "frequency": 1.0813,
+      "higher_elo": 1.0491,
+      "elo": 1.0314,
+      "logistic": 1.0305,
+      "gradient_boosting": 1.0319
+    }
+  ]
+}

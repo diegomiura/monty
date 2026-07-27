@@ -1,0 +1,101 @@
+# Club-football configuration (Premier League first).
+#
+# This is a SEPARATE domain from the international model, not a variant of
+# it. Clubs play ~38 matches a season against internationals' ~10, squads
+# turn over every transfer window, and teams enter and leave the competition
+# through promotion and relegation. Reusing config/default.yaml's parameters
+# would be wrong on every one of those counts — see the notes per block.
+#
+# Nothing here is tuned yet. These are documented starting values; the
+# tuning pass runs on early seasons only (see validation.dev_val_seasons)
+# and must never touch the evaluation years.
+
+random_seed: 42
+
+data:
+  raw_dir: data/raw
+  processed_dir: data/processed/clubs
+  metadata_dir: data/metadata
+  cache_max_age_hours: 12
+  division: E0
+  competition: Premier League
+  first_season_year: 1993
+  last_season_year: 2025
+  # E0/SP1/I1/D1/F1 are balanced double round robins, so season completeness
+  # is structurally verifiable. MLS is not — see reports/CLUB_DATA_AUDIT.md.
+  schedule: double_round_robin
+
+features:
+  # Model rows start here. Shots begin in 2000-01; starting the training
+  # window at that boundary keeps the shot features from being mostly
+  # missing, at the cost of ~7 seasons of goals-only history. Those earlier
+  # seasons still feed Elo and form state, exactly as pre-1990 internationals
+  # do in the international config.
+  train_start_season: "2000-01"
+  rolling_windows: [5, 10, 20]
+  # Internationals use 550 days because a team plays ~10 matches a year.
+  # A club plays ~38, so 550 days would average over roughly two full
+  # seasons and two transfer windows. 180 days ~ half a season.
+  ew_halflife_days: 180
+  # Rolling shot features (attack/defence quality proxies). Available from
+  # 2000-01 only; rows before that carry NaN and the imputer handles them.
+  shot_windows: [10]
+  use_shot_features: true
+
+elo:
+  initial_rating: 1500.0
+  # One competition here, so a single K. Higher than an international
+  # friendly (20) and below a World Cup match (60): league matches are
+  # competitive but frequent, so each carries less information.
+  k_base:
+    league: 32
+    other_tournament: 32
+  k_scale: 1.0
+  # Club home advantage is both larger and better identified than the
+  # international equivalent (45.6% home wins over 12,704 EPL matches).
+  # Starting value only.
+  home_advantage: 65.0
+  margin_multiplier: true
+  # Season-boundary regression, not inactivity. The international config
+  # uses 1460 days to catch teams that vanish for years; a club's summer
+  # break is ~80 days, so a 60-day threshold makes this fire exactly once
+  # per season and models squad turnover between campaigns.
+  inactivity_gap_days: 60
+  inactivity_shrink: 0.20
+  # Newly promoted clubs have no top-flight history. Starting them at the
+  # league mean would rate them average, which they systematically are not.
+  # They enter at (mean of current ratings + this offset).
+  promoted_elo_offset: -120.0
+
+models:
+  poisson_alpha: 1.0
+  logit_C: 0.05
+  hgb_max_iter: 300
+  hgb_learning_rate: 0.1
+  hgb_max_leaf_nodes: 31
+  hgb_min_samples_leaf: 40
+  hgb_l2: 1.0
+
+market:
+  # Closing odds are a BENCHMARK, never a feature, unless this gate is
+  # turned on and validation justifies it (the same pattern the repo uses
+  # for the Dixon-Coles correction).
+  use_market_features: false
+  # Restrict the benchmark to one consistent market. Pinnacle covers 5,150
+  # EPL matches at 2.40% overround; Bet365 covers 170 at 5.65%, soft enough
+  # that pooling them would bias the reference the model is judged against.
+  benchmark_source: pinnacle
+  # Overround removal. 'proportional' divides by the sum of implied
+  # probabilities; it is the simplest defensible choice and is documented
+  # rather than assumed optimal.
+  devig_method: proportional
+
+validation:
+  # Tuning happens only on these seasons. Later seasons are evaluation.
+  dev_val_seasons: ["2000-01", "2001-02", "2002-03", "2003-04", "2004-05"]
+  val_window_days: 730
+  ensemble_weight_step: 0.05
+
+score_matrix:
+  max_goals: 10
+  max_tail_mass: 0.001

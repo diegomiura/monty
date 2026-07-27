@@ -5,6 +5,10 @@ __pycache__/
 .env
 data/raw/*.csv
 data/raw/*.json
+# Club sources (football-data.co.uk) are free to download and analyse but
+# carry no redistribution grant — see reports/CLUB_DATA_AUDIT.md. Never
+# commit them; the pipeline re-downloads and caches at runtime.
+data/raw/clubs/
 data/interim/
 data/processed/
 models/*.joblib
