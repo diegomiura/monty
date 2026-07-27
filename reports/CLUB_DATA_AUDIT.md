@@ -108,6 +108,20 @@ playoff shootout is indistinguishable from an ordinary draw without joining
 an external fixture list. That blocks MLS *advancement* modelling (who went
 through) but not the core 90-minute model.
 
+### Completeness cannot be verified structurally for MLS
+
+The integrity check used for the European leagues asserts the balanced
+double round-robin identity — `n` teams must produce exactly `n * (n - 1)`
+matches — which catches dropped rows, duplicates and truncated downloads in
+one assertion. **MLS does not satisfy it**: the 2025 season played 540
+matches among 30 teams where the identity would demand 870, because of
+conference structure and an unbalanced schedule.
+
+MLS ingestion must therefore declare `schedule="unknown"`, which keeps the
+duplicate and score checks but gives up structural detection of silent row
+loss. A different completeness signal (an external fixture count per season)
+would be needed to recover that guarantee.
+
 ### Other MLS-specific notes
 
 Home win rate is 49.5% (H 2998 / D 1517 / A 1539) — materially higher than

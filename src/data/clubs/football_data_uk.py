@@ -172,19 +172,55 @@ def _parse_dates(raw: pd.Series) -> pd.Series:
     return out
 
 
-def season_integrity(df: pd.DataFrame, code: str, complete: bool = True) -> dict:
-    """Check a parsed season against the double round-robin identity.
+#: Schedule shapes we can verify a season's completeness against.
+#: ``double_round_robin`` — every ordered pair meets exactly once, so a
+#: completed season of n teams has exactly n*(n-1) matches. True of the
+#: English, Spanish, Italian, German and French top flights.
+#: ``unknown`` — no count identity available; only duplicate and score
+#: checks run. Required for competitions that are not balanced round
+#: robins: MLS (conferences plus an unbalanced schedule — 2025 played 540
+#: matches among 30 teams where the identity would demand 870), the Scottish
+#: Premiership (post-split 33 or 38 games), and any cup or playoff format.
+SCHEDULES = ("double_round_robin", "unknown")
 
-    A completed league season of ``n`` teams has exactly ``n * (n - 1)``
-    matches, each ordered pair meeting once. Deviations mean dropped rows
-    (the 2004-05 ragged-CSV failure mode), duplicates, or a truncated file.
 
-    ``complete=False`` for a season still in progress: only the upper bound
-    and the duplicate check are enforced.
+def expected_match_count(n_teams: int, schedule: str = "double_round_robin") -> int | None:
+    """Matches in a completed season, or None when the shape can't imply one."""
+    if schedule == "double_round_robin":
+        return n_teams * (n_teams - 1)
+    if schedule == "unknown":
+        return None
+    raise ValueError(f"unknown schedule {schedule!r}; expected one of {SCHEDULES}")
+
+
+def season_integrity(
+    df: pd.DataFrame,
+    code: str,
+    complete: bool = True,
+    schedule: str = "double_round_robin",
+) -> dict:
+    """Check a parsed season for dropped, duplicated or truncated rows.
+
+    The strongest available check is the schedule identity: in a balanced
+    double round-robin, ``n`` teams must produce exactly ``n * (n - 1)``
+    matches. That single assertion catches the 2004-05 ragged-CSV failure
+    mode (rows silently dropped), duplicated fixtures, and truncated
+    downloads, without maintaining a per-season count table.
+
+    **This identity is specific to balanced round-robin leagues.** Pass
+    ``schedule="unknown"`` for competitions that are not (see
+    :data:`SCHEDULES`); duplicate and score checks still run, but a silent
+    row loss would no longer be detectable from structure alone.
+
+    ``complete=False`` for a season still in progress: the upper bound and
+    duplicate checks are enforced, the exact count is not.
     """
+    if schedule not in SCHEDULES:
+        raise ValueError(f"unknown schedule {schedule!r}; expected one of {SCHEDULES}")
+
     teams = sorted(set(df["HomeTeam"].dropna()) | set(df["AwayTeam"].dropna()))
     n = len(teams)
-    expected = n * (n - 1)
+    expected = expected_match_count(n, schedule)
     actual = len(df)
     pairs = list(zip(df["HomeTeam"], df["AwayTeam"]))
     duplicates = len(pairs) - len(set(pairs))
@@ -192,22 +228,26 @@ def season_integrity(df: pd.DataFrame, code: str, complete: bool = True) -> dict
 
     report = {
         "season": season_label(code),
+        "schedule": schedule,
         "teams": n,
         "expected_matches": expected,
         "actual_matches": actual,
         "duplicate_fixtures": duplicates,
         "missing_scores": missing_scores,
-        "complete": actual == expected,
+        "complete": None if expected is None else actual == expected,
     }
     if duplicates:
         raise ValueError(
             f"{season_label(code)}: {duplicates} duplicated fixture(s) — "
             "the same ordered pair appears more than once."
         )
+    if expected is None:
+        return report
     if actual > expected:
         raise ValueError(
             f"{season_label(code)}: {actual} matches but {n} teams imply at most "
-            f"{expected}. Parsed file is inconsistent."
+            f"{expected} under a {schedule} schedule. Either the parse is wrong or "
+            "this competition is not a balanced round robin — pass schedule='unknown'."
         )
     if complete and actual < expected:
         raise ValueError(
@@ -234,11 +274,14 @@ def load_seasons(
     config: dict | None = None,
     offline: bool = False,
     incomplete_ok: tuple[str, ...] = (),
+    schedule: str = "double_round_robin",
 ) -> tuple[pd.DataFrame, list[dict]]:
     """Download (or reuse cache) and parse several seasons.
 
     Returns the concatenated frame and one integrity report per season.
     ``incomplete_ok`` names season codes allowed to be mid-season.
+    ``schedule`` selects the completeness identity — leave the default for
+    balanced round-robin leagues, pass ``"unknown"`` otherwise.
     """
     frames, reports = [], []
     for code in codes:
@@ -246,7 +289,9 @@ def load_seasons(
         df = select_columns(read_football_data_csv(path))
         df["season"] = season_label(code)
         df["division"] = div
-        rep = season_integrity(df, code, complete=code not in incomplete_ok)
+        rep = season_integrity(
+            df, code, complete=code not in incomplete_ok, schedule=schedule
+        )
         reports.append(rep)
         frames.append(df)
         log.info(

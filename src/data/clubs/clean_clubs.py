@@ -72,16 +72,84 @@ def _kickoff(date: pd.Series, time: pd.Series) -> pd.Series:
     return out
 
 
+#: Closing-odds books in preference order: (source label, H/D/A columns).
+#: Pinnacle first — the sharpest of the three and the widest covered here.
+ODDS_BOOKS = [
+    ("pinnacle", ("PSCH", "PSCD", "PSCA")),
+    ("bet365", ("B365CH", "B365CD", "B365CA")),
+    ("average", ("AvgCH", "AvgCD", "AvgCA")),
+]
+
+
+def _closing_odds(raw: pd.DataFrame) -> pd.DataFrame:
+    """Pick one book per row and record which.
+
+    Selection is **per row, not per column**: a book supplies all three of
+    home/draw/away or none of them. Filling each column independently could
+    take the home price from Pinnacle and the draw price from Bet365, giving
+    a three-way "market" that no bookmaker ever offered and whose overround
+    is meaningless.
+
+    ``odds_source`` preserves provenance so the benchmark can be restricted
+    to a single consistent market rather than silently mixing books.
+    """
+    n = len(raw)
+    out = pd.DataFrame(
+        {
+            "odds_close_a": pd.Series([np.nan] * n, index=raw.index, dtype=float),
+            "odds_close_draw": pd.Series([np.nan] * n, index=raw.index, dtype=float),
+            "odds_close_b": pd.Series([np.nan] * n, index=raw.index, dtype=float),
+            "odds_source": pd.Series([None] * n, index=raw.index, dtype=object),
+        }
+    )
+    unfilled = pd.Series(True, index=raw.index)
+    for label, (h, d, a) in ODDS_BOOKS:
+        if not all(c in raw.columns for c in (h, d, a)):
+            continue
+        complete = raw[h].notna() & raw[d].notna() & raw[a].notna()
+        take = unfilled & complete
+        if not take.any():
+            continue
+        out.loc[take, "odds_close_a"] = raw.loc[take, h].astype(float)
+        out.loc[take, "odds_close_draw"] = raw.loc[take, d].astype(float)
+        out.loc[take, "odds_close_b"] = raw.loc[take, a].astype(float)
+        out.loc[take, "odds_source"] = label
+        unfilled &= ~take
+    return out
+
+
 def build_club_canonical(
-    raw: pd.DataFrame, division: str = "E0", retrieved_at: str | None = None
+    raw: pd.DataFrame,
+    division: str = "E0",
+    retrieved_at: str | None = None,
+    allow_new_clubs: bool = False,
 ) -> tuple[pd.DataFrame, dict]:
-    """Map parsed football-data.co.uk rows onto the canonical schema."""
+    """Map parsed football-data.co.uk rows onto the canonical schema.
+
+    Raises on any club name absent from :data:`KNOWN_CLUBS` unless
+    ``allow_new_clubs=True``. An unrecognised name is far more often a
+    respelling of an existing club than a genuine promotion, and a respelling
+    silently creates a phantom team that starts from a default rating with no
+    history — a corruption that produces plausible-looking output and would
+    not surface in any downstream check. Refusing is the only safe default;
+    review the reported names, then either pin the new club in KNOWN_CLUBS or
+    pass the flag deliberately.
+    """
     retrieved_at = retrieved_at or utc_now_iso()
     competition = COMPETITION_BY_DIV.get(division, division)
 
     unknown = check_club_drift(raw)
+    if unknown and not allow_new_clubs:
+        raise ValueError(
+            f"{describe_drift(unknown)}\n"
+            "Refusing to build: an unrecognised spelling of an existing club would "
+            "create a phantom team with no history. Add genuinely new clubs to "
+            "KNOWN_CLUBS in src/data/clubs/team_names_clubs.py, or pass "
+            "allow_new_clubs=True if you have reviewed the names above."
+        )
     if unknown:
-        log.warning("club name drift detected:\n%s", describe_drift(unknown))
+        log.warning("proceeding with new club names (allow_new_clubs=True):\n%s",
+                    describe_drift(unknown))
 
     df = pd.DataFrame(
         {
@@ -103,11 +171,9 @@ def build_club_canonical(
             "corners_a": raw["HC"],
             "corners_b": raw["AC"],
             "referee": raw["Referee"],
-            "odds_close_a": raw["PSCH"].fillna(raw["B365CH"]).fillna(raw["AvgCH"]),
-            "odds_close_draw": raw["PSCD"].fillna(raw["B365CD"]).fillna(raw["AvgCD"]),
-            "odds_close_b": raw["PSCA"].fillna(raw["B365CA"]).fillna(raw["AvgCA"]),
         }
     )
+    df = pd.concat([df, _closing_odds(raw)], axis=1)
 
     incomplete = df["goals_a_90"].isna() | df["goals_b_90"].isna()
     if incomplete.any():
@@ -160,6 +226,9 @@ def build_club_canonical(
         "kickoff_time_coverage": round(float(df["kickoff_time"].notna().mean()), 4),
         "shots_coverage": round(float(df["shots_a"].notna().mean()), 4),
         "closing_odds_coverage": round(float(df["odds_close_a"].notna().mean()), 4),
+        "closing_odds_by_source": {
+            k: int(v) for k, v in df["odds_source"].value_counts().items()
+        },
         "home_win_rate": round(float((df["winner_90"] == "team_a").mean()), 4),
         "draw_rate": round(float((df["winner_90"] == "draw").mean()), 4),
         "away_win_rate": round(float((df["winner_90"] == "team_b").mean()), 4),
@@ -177,12 +246,17 @@ def refresh_club_dataset(
     config: dict | None = None,
     offline: bool = False,
     incomplete_ok: tuple[str, ...] = (),
+    schedule: str = "double_round_robin",
+    allow_new_clubs: bool = False,
 ) -> tuple[pd.DataFrame, dict]:
     """Download (or reuse cache), parse, and build the canonical club table."""
     codes = season_codes(first_year, last_year)
     raw, season_reports = load_seasons(
-        codes, division, config, offline, incomplete_ok=incomplete_ok
+        codes, division, config, offline,
+        incomplete_ok=incomplete_ok, schedule=schedule,
     )
-    df, audit = build_club_canonical(raw, division)
+    df, audit = build_club_canonical(
+        raw, division, allow_new_clubs=allow_new_clubs
+    )
     audit["seasons"] = season_reports
     return df, audit

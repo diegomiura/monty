@@ -91,19 +91,50 @@ def test_duplicate_fixture_raises():
         ]))
 
 
-def test_closing_odds_fall_back_across_bookmakers():
-    """Pinnacle preferred, then Bet365, then the market average."""
-    df, _ = build_club_canonical(_raw([
+def test_closing_odds_fall_back_across_bookmakers_and_record_provenance():
+    """Pinnacle preferred, then Bet365, then the market average — and the
+    chosen book is recorded so a benchmark can use one consistent market."""
+    df, audit = build_club_canonical(_raw([
         {"Date": "2025-08-15", "HomeTeam": "Arsenal", "AwayTeam": "Chelsea", "FTHG": 1, "FTAG": 0,
-         "PSCH": 1.5, "B365CH": 1.6, "AvgCH": 1.7},
+         "PSCH": 1.5, "PSCD": 4.0, "PSCA": 6.0,
+         "B365CH": 1.6, "B365CD": 4.1, "B365CA": 6.1},
         {"Date": "2025-08-16", "HomeTeam": "Everton", "AwayTeam": "Fulham", "FTHG": 1, "FTAG": 0,
-         "B365CH": 2.6, "AvgCH": 2.7},
+         "B365CH": 2.6, "B365CD": 3.2, "B365CA": 2.8},
         {"Date": "2025-08-17", "HomeTeam": "Leeds", "AwayTeam": "Wolves", "FTHG": 1, "FTAG": 0,
-         "AvgCH": 3.7},
+         "AvgCH": 3.7, "AvgCD": 3.5, "AvgCA": 2.0},
         {"Date": "2025-08-18", "HomeTeam": "Burnley", "AwayTeam": "Brentford", "FTHG": 1, "FTAG": 0},
     ]))
     assert list(df["odds_close_a"])[:3] == [1.5, 2.6, 3.7]
+    assert list(df["odds_source"])[:3] == ["pinnacle", "bet365", "average"]
     assert pd.isna(df["odds_close_a"].iloc[3])
+    assert df["odds_source"].iloc[3] is None
+    assert audit["closing_odds_by_source"] == {"pinnacle": 1, "bet365": 1, "average": 1}
+
+
+def test_odds_never_mix_books_within_one_row():
+    """A book supplies all three prices or none.
+
+    Filling each column independently could take the home price from one
+    bookmaker and the draw price from another, producing a 'market' nobody
+    offered whose overround is meaningless.
+    """
+    df, _ = build_club_canonical(_raw([
+        # Pinnacle has home+draw but no away price -> must fall through to Bet365
+        {"Date": "2025-08-15", "HomeTeam": "Arsenal", "AwayTeam": "Chelsea", "FTHG": 1, "FTAG": 0,
+         "PSCH": 1.5, "PSCD": 4.0,
+         "B365CH": 1.6, "B365CD": 4.1, "B365CA": 6.1},
+    ]))
+    assert df["odds_source"].iloc[0] == "bet365"
+    assert list(df[["odds_close_a", "odds_close_draw", "odds_close_b"]].iloc[0]) == [1.6, 4.1, 6.1]
+
+
+def test_partial_odds_everywhere_leaves_the_row_unpriced():
+    df, _ = build_club_canonical(_raw([
+        {"Date": "2025-08-15", "HomeTeam": "Arsenal", "AwayTeam": "Chelsea", "FTHG": 1, "FTAG": 0,
+         "PSCH": 1.5, "B365CD": 4.1, "AvgCA": 6.1},
+    ]))
+    assert df["odds_source"].iloc[0] is None
+    assert df["odds_close_a"].isna().all()
 
 
 def test_match_stats_are_carried_but_marked_post_match():
@@ -128,6 +159,26 @@ def test_known_clubs_covers_the_verified_set():
 def test_drift_is_empty_for_known_names():
     df = pd.DataFrame({"HomeTeam": ["Arsenal", "Man United"], "AwayTeam": ["Chelsea", "Leeds"]})
     assert check_club_drift(df) == []
+
+
+def test_build_refuses_unknown_club_by_default():
+    """A respelling creates a phantom team with no history and produces
+    plausible-looking output, so the default must be to refuse."""
+    with pytest.raises(ValueError, match="Refusing to build"):
+        build_club_canonical(_raw([
+            {"Date": "2025-08-15", "HomeTeam": "Man Utd", "AwayTeam": "Chelsea",
+             "FTHG": 1, "FTAG": 0},
+        ]))
+
+
+def test_build_allows_new_clubs_when_explicitly_permitted():
+    df, audit = build_club_canonical(
+        _raw([{"Date": "2025-08-15", "HomeTeam": "Wrexham", "AwayTeam": "Chelsea",
+               "FTHG": 1, "FTAG": 0}]),
+        allow_new_clubs=True,
+    )
+    assert len(df) == 1
+    assert audit["unknown_club_names"] == ["Wrexham"]
 
 
 def test_drift_flags_a_rename_distinctly_from_a_promotion():

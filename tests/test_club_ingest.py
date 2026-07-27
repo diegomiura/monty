@@ -8,6 +8,7 @@ import pandas as pd
 import pytest
 
 from src.data.clubs.football_data_uk import (
+    expected_match_count,
     read_football_data_csv,
     season_code,
     season_codes,
@@ -130,6 +131,40 @@ def test_integrity_catches_duplicate_fixtures(tmp_path):
     df = select_columns(read_football_data_csv(_write(tmp_path, [HEADER] + rows)))
     with pytest.raises(ValueError, match="duplicated fixture"):
         season_integrity(df, "1920")
+
+
+def test_expected_count_only_defined_for_round_robin():
+    assert expected_match_count(20) == 380
+    assert expected_match_count(22) == 462
+    assert expected_match_count(30, "unknown") is None
+    with pytest.raises(ValueError, match="unknown schedule"):
+        expected_match_count(20, "conference_playoff")
+
+
+def test_non_round_robin_competition_skips_the_count_identity(tmp_path):
+    """MLS 2025 played 540 matches among 30 teams; the round-robin identity
+    would demand 870 and reject a perfectly good season. Such competitions
+    must declare schedule='unknown' — duplicate checks still apply."""
+    teams = [f"T{i}" for i in range(6)]
+    rows = _round_robin_rows(teams)[:10]      # unbalanced, deliberately partial
+    df = select_columns(read_football_data_csv(_write(tmp_path, [HEADER] + rows)))
+
+    with pytest.raises(ValueError, match="missing"):
+        season_integrity(df, "2526", schedule="double_round_robin")
+
+    rep = season_integrity(df, "2526", schedule="unknown")
+    assert rep["expected_matches"] is None
+    assert rep["complete"] is None
+    assert rep["actual_matches"] == 10
+
+
+def test_unknown_schedule_still_rejects_duplicates(tmp_path):
+    teams = ["A", "B", "C"]
+    rows = _round_robin_rows(teams)
+    rows.append(rows[0])
+    df = select_columns(read_football_data_csv(_write(tmp_path, [HEADER] + rows)))
+    with pytest.raises(ValueError, match="duplicated fixture"):
+        season_integrity(df, "2526", schedule="unknown")
 
 
 def test_incomplete_season_allowed_when_declared(tmp_path):
